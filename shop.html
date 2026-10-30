@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop All Creations — Knots &amp; Facets Atelier</title>
+  <meta name="description" content="Explore handcrafted glass and crystal jewellery, slow cotton crochet accessories, and bespoke gift boxes from Knots & Facets.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* Shop Filter Toolbar */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-tab {
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transition: all 0.25s var(--out);
+    }
+    .filter-tab:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+    .filter-tab.active {
+      background: var(--ink);
+      color: var(--white);
+      border-color: var(--ink);
+    }
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-input-wrap {
+      position: relative;
+    }
+    .search-input-wrap input {
+      padding: 8px 16px 8px 36px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 0.82rem;
+      outline: none;
+      color: var(--ink);
+      min-width: 200px;
+      transition: border-color 0.2s;
+    }
+    .search-input-wrap input:focus {
+      border-color: var(--accent);
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      stroke: var(--ink-soft);
+      pointer-events: none;
+    }
+    .sort-select {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink);
+      outline: none;
+      cursor: pointer;
+    }
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+    }
+    .empty-catalog-state {
+      text-align: center;
+      padding: 80px 20px;
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--line);
+    }
+    .empty-catalog-state h3 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      margin: 0 0 10px;
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#shopMain">Skip to shop content</a>
+
+<div class="site-frame">
+  <!-- Announcement -->
+  <div class="announcement-bar">
+    <span>✨ Complimentary Handmade Gift Box on Orders Over <em>$80</em></span>
+    <span>🌿 100% Slow Handcrafted in Studio</span>
+  </div>
+
+  <!-- Header Nav -->
+  <header class="site-nav" role="banner">
+    <a class="brand" href="index.html" aria-label="Knots &amp; Facets Home">
+      <svg viewBox="0 0 40 40" fill="none" stroke="#29231F" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 4.5 31.5 14 20 35.5 8.5 14z"/>
+        <path d="M8.5 14h23M14.2 14 20 4.5 25.8 14M14.2 14 20 35.5 25.8 14" stroke="#9B7765" stroke-width="1"/>
+        <path d="M5 27c0-6 8-6 8 0s-9 7-9 1 9-14 18-10 4 13-4 10" stroke="#29231F" stroke-width="1.2"/>
+      </svg>
+      <span>Knots &amp; Facets</span>
+    </a>
+
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html" class="active">Shop</a></li>
+        <li><a href="story.html">Our Story</a></li>
+        <li><a href="lookbook.html">Lookbook</a></li>
+        <li><a href="custom.html">Custom Orders</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <select class="currency-select" aria-label="Select Currency">
+        <option value="USD">USD ($)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="GBP">GBP (£)</option>
+        <option value="INR">INR (₹)</option>
+      </select>
+      <button class="nav-icon-btn" id="navCartBtn" aria-label="Open Shopping Bag">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="badge-count" id="navCartCount">0</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span></button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="story.html">Our Story</a></li>
+      <li><a href="lookbook.html">Lookbook</a></li>
+      <li><a href="custom.html">Custom Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a class="btn-dark" href="custom.html" style="width:100%; text-align:center;">Request Bespoke Piece</a>
+    </div>
+  </div>
+
+  <main id="shopMain">
+    <!-- Page Banner -->
+    <section class="page-banner">
+      <span class="eyebrow">The Complete Atelier Catalog</span>
+      <h1 class="page-title">Handcrafted Glass &amp; Slow Fibre</h1>
+      <p class="page-subtitle">Every single item is made by hand with patient devotion. No two glass drops catch the light identically, and every crochet loop has its own story.</p>
+    </section>
+
+    <!-- Shop Content Section -->
+    <section class="section-block" style="padding-top: 20px;">
+      <div class="filter-toolbar">
+        <div class="filter-tabs" id="categoryTabs">
+          <button class="filter-tab active" data-category="all">All Pieces</button>
+          <button class="filter-tab" data-category="jewellery">Glass &amp; Crystal Jewellery</button>
+          <button class="filter-tab" data-category="crochet">Crochet &amp; Fibre</button>
+          <button class="filter-tab" data-category="gifting">Curated Gifting</button>
+        </div>
+
+        <div class="filter-controls">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="shopSearchInput" placeholder="Search crystals, bags, sets...">
+          </div>
+          <select class="sort-select" id="shopSortSelect" aria-label="Sort products">
+            <option value="featured">Featured Collection</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="title">Alphabetical (A–Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-count" id="resultsCount">Showing all handcrafted pieces</div>
+
+      <div class="product-grid" id="shopProductGrid">
+        <!-- Injected via JavaScript from catalog -->
+      </div>
+    </section>
+
+    <!-- Studio Ethics & Craft Guarantee -->
+    <section class="section-block" style="background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); margin-bottom: 60px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; text-align: center;">
+        <div style="padding: 16px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">✨</div>
+          <h3 style="font-family: var(--serif); font-size: 1.4rem; margin: 0 0 6px;">Prismatic Crystal Quality</h3>
+          <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0;">Genuine faceted glass and lead-free crystal elements wire-wrapped in 14k gold-filled and sterling silver.</p>
+        </div>
+        <div style="padding: 16px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">🌿</div>
+          <h3 style="font-family: var(--serif); font-size: 1.4rem; margin: 0 0 6px;">Organic Natural Fibres</h3>
+          <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0;">Crochet creations knotted using 100% combed unbleached cotton, natural flax linen, and botanical dyes.</p>
+        </div>
+        <div style="padding: 16px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">💌</div>
+          <h3 style="font-family: var(--serif); font-size: 1.4rem; margin: 0 0 6px;">Wax-Sealed Presentation</h3>
+          <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0;">Every order arrives wrapped in recycled tissue paper and sealed with an authentic studio wax impression.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Knots &amp; Facets</h3>
+        <p>A dual-discipline handmade atelier. Glass and crystal pieces that refract light, crochet accessories that bring warmth to daily life.</p>
+        <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">EST. STUDIO COLLECTION · ALL RIGHTS RESERVED</span>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop Catalog</a></li>
+          <li><a href="story.html">Our Story</a></li>
+          <li><a href="lookbook.html">Lookbook</a></li>
+          <li><a href="custom.html">Bespoke Orders</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="custom.html#care">Jewellery &amp; Fibre Care</a></li>
+          <li><a href="contact.html#faq">Shipping &amp; Delivery</a></li>
+          <li><a href="contact.html">Studio Visits</a></li>
+          <li><a href="custom.html">Bridal Commissions</a></li>
+          <li><a href="contact.html">Direct Enquiries</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Studio Journal</h4>
+        <p style="font-size:0.86rem; color:var(--ink-soft); margin-bottom:12px;">Receive secret collection previews and 10% off your first handcrafted order.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); window.KF.showToast('✨ Thank you for subscribing! Use code KNOTS10 for 10% off.', '💌'); this.reset();">
+          <input type="email" required placeholder="Enter your email...">
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Knots &amp; Facets. Handcrafted with care.</span>
+      <span>Thoughtfully made slow goods · Plastic-free packaging</span>
+    </div>
+  </footer>
+</div>
+
+<script src="cart.js"></script>
+<script src="animations.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const grid = document.getElementById('shopProductGrid');
+    const tabs = document.querySelectorAll('#categoryTabs .filter-tab');
+    const searchInput = document.getElementById('shopSearchInput');
+    const sortSelect = document.getElementById('shopSortSelect');
+    const countEl = document.getElementById('resultsCount');
+
+    let currentCategory = 'all';
+    let currentQuery = '';
+    let currentSort = 'featured';
+
+    function renderFilteredProducts() {
+      let filtered = window.KF.CATALOG.filter(item => {
+        const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+        const matchesSearch = !currentQuery || 
+          item.title.toLowerCase().includes(currentQuery.toLowerCase()) || 
+          item.description.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          item.material.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          item.tags.some(t => t.toLowerCase().includes(currentQuery.toLowerCase()));
+        return matchesCategory && matchesSearch;
+      });
+
+      // Sorting
+      if (currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.priceUSD - b.priceUSD);
+      } else if (currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.priceUSD - a.priceUSD);
+      } else if (currentSort === 'title') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      countEl.textContent = `Showing ${filtered.length} of ${window.KF.CATALOG.length} handcrafted pieces`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-catalog-state">
+            <span style="font-size:2.4rem;">🔍</span>
+            <h3>No matching pieces found</h3>
+            <p style="color:var(--ink-soft); max-width:440px; margin: 0 auto 20px;">We couldn't find anything matching "${currentQuery}". Try selecting another category or resetting your search.</p>
+            <button class="btn-dark" onclick="document.getElementById('shopSearchInput').value=''; document.querySelector('[data-category=all]').click();">Reset Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => window.KF.renderProductCard(item)).join('');
+      if (window.KFA) {
+        window.KFA.init3DTilt();
+        window.KFA.initScrollReveals();
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentCategory = tab.dataset.category;
+        renderFilteredProducts();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      currentQuery = e.target.value.trim();
+      renderFilteredProducts();
+    });
+
+    sortSelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      renderFilteredProducts();
+    });
+
+    renderFilteredProducts();
+  });
+</script>
+</body>
+</html>

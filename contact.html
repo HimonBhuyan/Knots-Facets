@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact &amp; Studio Inquiries — Knots &amp; Facets</title>
+  <meta name="description" content="Get in touch with the Knots & Facets studio atelier. Inquire about custom orders, bespoke bridal sets, wholesale stockist partnerships, or visit details.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: clamp(32px, 6vw, 70px);
+      margin-bottom: 80px;
+    }
+    .contact-info-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: clamp(28px, 4vw, 48px);
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-info-card h2 {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+    .contact-info-card p {
+      color: var(--ink-soft);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .contact-details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin-bottom: 36px;
+    }
+    .contact-detail-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .detail-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .detail-text strong {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .detail-text a, .detail-text span {
+      color: var(--ink);
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+
+    /* Form Card */
+    .contact-form-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: clamp(28px, 4vw, 48px);
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-form-card h2 {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      margin: 0 0 20px;
+      color: var(--ink);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      font-size: 0.92rem;
+      color: var(--ink);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+    }
+
+    /* FAQ Section */
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      padding: 20px 24px;
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .faq-question::after {
+      content: "+";
+      font-size: 1.5rem;
+      color: var(--accent);
+      transition: transform 0.3s;
+    }
+    .faq-item.active .faq-question::after {
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 24px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-size: 0.95rem;
+      transition: max-height 0.35s var(--out), padding 0.35s var(--out);
+    }
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+      padding-bottom: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .contact-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#contactMain">Skip to contact content</a>
+
+<div class="site-frame">
+  <!-- Announcement -->
+  <div class="announcement-bar">
+    <span>✨ Complimentary Handmade Gift Box on Orders Over <em>$80</em></span>
+    <span>🌿 100% Slow Handcrafted in Studio</span>
+  </div>
+
+  <!-- Header Nav -->
+  <header class="site-nav" role="banner">
+    <a class="brand" href="index.html" aria-label="Knots &amp; Facets Home">
+      <svg viewBox="0 0 40 40" fill="none" stroke="#29231F" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 4.5 31.5 14 20 35.5 8.5 14z"/>
+        <path d="M8.5 14h23M14.2 14 20 4.5 25.8 14M14.2 14 20 35.5 25.8 14" stroke="#9B7765" stroke-width="1"/>
+        <path d="M5 27c0-6 8-6 8 0s-9 7-9 1 9-14 18-10 4 13-4 10" stroke="#29231F" stroke-width="1.2"/>
+      </svg>
+      <span>Knots &amp; Facets</span>
+    </a>
+
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="story.html">Our Story</a></li>
+        <li><a href="lookbook.html">Lookbook</a></li>
+        <li><a href="custom.html">Custom Orders</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <select class="currency-select" aria-label="Select Currency">
+        <option value="USD">USD ($)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="GBP">GBP (£)</option>
+        <option value="INR">INR (₹)</option>
+      </select>
+      <button class="nav-icon-btn" id="navCartBtn" aria-label="Open Shopping Bag">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="badge-count" id="navCartCount">0</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span></button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="story.html">Our Story</a></li>
+      <li><a href="lookbook.html">Lookbook</a></li>
+      <li><a href="custom.html">Custom Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a class="btn-dark" href="custom.html" style="width:100%; text-align:center;">Request Bespoke Piece</a>
+    </div>
+  </div>
+
+  <main id="contactMain">
+    <section class="page-banner">
+      <span class="eyebrow">Direct Atelier Communication</span>
+      <h1 class="page-title">Ask About a Piece</h1>
+      <p class="page-subtitle">We welcome all inquiries — whether you have questions about a specific stone, want to discuss bridal bespoke sets, or wish to say hello to our workshop.</p>
+    </section>
+
+    <div class="section-block">
+      <div class="contact-layout">
+        
+        <!-- Left: Studio Information -->
+        <div class="contact-info-card">
+          <h2>Atelier &amp; Studio</h2>
+          <p>Every piece is created and shipped directly from our independent studio workshop. We respond to all correspondence personally within 24 business hours.</p>
+
+          <div class="contact-details-list">
+            <div class="contact-detail-item">
+              <div class="detail-icon">✉️</div>
+              <div class="detail-text">
+                <strong>Studio Email</strong>
+                <a href="mailto:hello@knotsandfacets.com">hello@knotsandfacets.com</a>
+              </div>
+            </div>
+
+            <div class="contact-detail-item">
+              <div class="detail-icon">💬</div>
+              <div class="detail-text">
+                <strong>Studio Hotline &amp; WhatsApp</strong>
+                <span>+1 (555) 742-9180</span>
+              </div>
+            </div>
+
+            <div class="contact-detail-item">
+              <div class="detail-icon">📍</div>
+              <div class="detail-text">
+                <strong>Studio Address</strong>
+                <span>Atelier Studio 4B, 182 St. Jude Row, Glasshouse Quarter</span>
+              </div>
+            </div>
+
+            <div class="contact-detail-item">
+              <div class="detail-icon">⏰</div>
+              <div class="detail-text">
+                <strong>Bench Hours</strong>
+                <span>Tuesday – Saturday: 10:00 AM – 5:30 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: var(--surface-alt); padding: 18px 22px; border-radius: var(--radius-sm); font-size: 0.88rem; color: var(--ink-soft);">
+            <strong style="color:var(--ink); display:block; margin-bottom:4px;">🕊️ Slow Studio Guarantee</strong>
+            Orders are carefully hand-assembled and wrapped with botanical sprigs and certified wax stamps before departure.
+          </div>
+        </div>
+
+        <!-- Right: Inquiry Form -->
+        <div class="contact-form-card">
+          <h2>Send a Note to Our Bench</h2>
+          <form id="contactForm" onsubmit="event.preventDefault(); submitContactForm();">
+            <div class="form-group">
+              <label for="contactTopic">Inquiry Type</label>
+              <select id="contactTopic" required>
+                <option value="bespoke">Custom Commission / Bespoke Request</option>
+                <option value="bridal">Bridal Party &amp; Wedding Sets</option>
+                <option value="order">Existing Order Status or Sizing</option>
+                <option value="wholesale">Stockist &amp; Boutique Wholesale</option>
+                <option value="general">General Studio Question</option>
+              </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label for="contactName">Your Name</label>
+                <input type="text" id="contactName" required placeholder="Elena Rostova">
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">Your Email</label>
+                <input type="email" id="contactEmail" required placeholder="elena@example.com">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contactSubject">Subject</label>
+              <input type="text" id="contactSubject" required placeholder="Custom colorway inquiry for Solstice pendant...">
+            </div>
+
+            <div class="form-group">
+              <label for="contactMessage">Your Message</label>
+              <textarea id="contactMessage" rows="5" required placeholder="Tell us about the piece you have in mind, your timeline, or any questions you may have..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-dark" style="width:100%; padding:14px; font-size:0.92rem;">Send Note to Atelier</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Studio FAQ Accordion -->
+      <section id="faq" style="margin-top: 60px;">
+        <div class="section-header center">
+          <span class="eyebrow">Common Questions</span>
+          <h2 class="title">Studio FAQ</h2>
+          <p class="subtext">Everything you need to know about our handmade process, shipping timelines, and custom orders.</p>
+        </div>
+
+        <div class="faq-container">
+          <div class="faq-item active">
+            <button class="faq-question">How long does it take to make and ship an order?</button>
+            <div class="faq-answer">
+              Because every piece is handcrafted in our studio, ready-to-ship catalog pieces depart within 2–3 business days. Bespoke custom commissions and bridal suites typically require 7–12 business days to select stones, knot the fibers, and wire-wrap. If you have an urgent event, please let us know!
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">What packaging do you use for gifts?</button>
+            <div class="faq-answer">
+              Every single Knots &amp; Facets order arrives ready for gifting. We use FSC-certified recyclable rigid kraft keepsake boxes, organic cotton tissue paper, a dried lavender botanical sprig, and an authentic hand-pressed wax seal with our diamond motif. Plastic is never used.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">Can I customize necklace lengths or crochet strap sizes?</button>
+            <div class="faq-answer">
+              Yes, absolutely! Since all jewelry chains and crochet handles are measured and assembled by hand in our studio, we can customize chain lengths from 14 inches to 24 inches or modify bag strap drop heights at no additional cost. Just note your preference in your order comments or via our Custom Orders page.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">Are the earring wires suitable for sensitive ears?</button>
+            <div class="faq-answer">
+              Yes. We strictly use 14k gold-filled wire and 925 sterling silver for all earring hooks and posts. Gold-filled contains a substantial layer of real 14k gold mechanically bonded to a brass core, making it nickel-free, hypoallergenic, and resistant to tarnishing or flaking.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">Do you offer international shipping?</button>
+            <div class="faq-answer">
+              We ship worldwide with fully tracked postal services. Delivery typically takes 4–7 business days to North America and Europe, and 6–10 business days to Asia and Australasia. Complimentary tracked shipping is automatically unlocked on all orders over $80 USD.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Knots &amp; Facets</h3>
+        <p>A dual-discipline handmade atelier. Glass and crystal pieces that refract light, crochet accessories that bring warmth to daily life.</p>
+        <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">EST. STUDIO COLLECTION · ALL RIGHTS RESERVED</span>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop Catalog</a></li>
+          <li><a href="story.html">Our Story</a></li>
+          <li><a href="lookbook.html">Lookbook</a></li>
+          <li><a href="custom.html">Bespoke Orders</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="custom.html#care">Jewellery &amp; Fibre Care</a></li>
+          <li><a href="contact.html#faq">Shipping &amp; Delivery</a></li>
+          <li><a href="contact.html">Studio Visits</a></li>
+          <li><a href="custom.html">Bridal Commissions</a></li>
+          <li><a href="contact.html">Direct Enquiries</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Studio Journal</h4>
+        <p style="font-size:0.86rem; color:var(--ink-soft); margin-bottom:12px;">Receive secret collection previews and 10% off your first handcrafted order.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); window.KF.showToast('✨ Thank you for subscribing! Use code KNOTS10 for 10% off.', '💌'); this.reset();">
+          <input type="email" required placeholder="Enter your email...">
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Knots &amp; Facets. Handcrafted with care.</span>
+      <span>Thoughtfully made slow goods · Plastic-free packaging</span>
+    </div>
+  </footer>
+</div>
+
+<script src="cart.js"></script>
+<script src="animations.js"></script>
+<script>
+  // FAQ accordion toggle
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isActive = item.classList.contains('active');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+  function submitContactForm() {
+    const name = document.getElementById('contactName').value;
+    const topic = document.getElementById('contactTopic').options[document.getElementById('contactTopic').selectedIndex].text;
+    window.KF.showToast(`✨ Thank you ${name}! Your inquiry regarding "${topic}" has been received. Our studio team will reply within 24 hours.`, '💌');
+    document.getElementById('contactForm').reset();
+  }
+</script>
+</body>
+</html>
