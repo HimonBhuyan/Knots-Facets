@@ -32,7 +32,7 @@ export interface CurrencyConfig {
   label: string;
 }
 
-export type PageId = 'home' | 'shop' | 'story' | 'lookbook' | 'custom' | 'contact';
+export type PageId = 'home' | 'shop' | 'story' | 'lookbook' | 'custom' | 'contact' | 'checkout';
 
 export interface LookbookItem {
   id: string;

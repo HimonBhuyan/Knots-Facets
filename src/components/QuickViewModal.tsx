@@ -4,7 +4,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { X, Heart, Sparkles, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
 
 export const QuickViewModal: React.FC = () => {
-  const { quickViewProduct, closeQuickView, addToCart, formatPrice } = useCart();
+  const { quickViewProduct, closeQuickView, addToCart, openCheckout, formatPrice } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -133,6 +133,17 @@ export const QuickViewModal: React.FC = () => {
                 }}
               >
                 Add to Bag • {formatPrice(quickViewProduct.priceUSD)}
+              </button>
+
+              <button
+                className="btn-secondary quickview-buy-now-btn"
+                onClick={() => {
+                  addToCart(quickViewProduct.id);
+                  closeQuickView();
+                  openCheckout();
+                }}
+              >
+                Buy Now →
               </button>
 
               <button

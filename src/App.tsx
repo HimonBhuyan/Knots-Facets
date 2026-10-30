@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageId } from './types';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { usePageAnimations } from './hooks/usePageAnimations';
 import { Navbar } from './components/Navbar';
@@ -8,7 +8,6 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
 import { QuickViewModal } from './components/QuickViewModal';
-import { CheckoutModal } from './components/CheckoutModal';
 import { ToastContainer } from './components/ToastContainer';
 import { LightRefractionOverlay } from './components/LightRefractionOverlay';
 import { MobileQuickPurchaseBar } from './components/MobileQuickPurchaseBar';
@@ -20,9 +19,20 @@ import { StoryPage } from './pages/StoryPage';
 import { LookbookPage } from './pages/LookbookPage';
 import { CustomPage } from './pages/CustomPage';
 import { ContactPage } from './pages/ContactPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 
 export const AppContent: React.FC = () => {
   const [activePage, setActivePage] = useState<PageId>('home');
+  const { isCheckoutOpen, closeCheckout } = useCart();
+
+  // Route to full Checkout & Payment Gateway page whenever checkout is triggered
+  useEffect(() => {
+    if (isCheckoutOpen) {
+      setActivePage('checkout');
+      closeCheckout();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isCheckoutOpen, closeCheckout]);
 
   // Trigger animations on page mount & route change
   usePageAnimations(activePage);
@@ -56,6 +66,7 @@ export const AppContent: React.FC = () => {
         {activePage === 'lookbook' && <LookbookPage setActivePage={setActivePage} />}
         {activePage === 'custom' && <CustomPage setActivePage={setActivePage} />}
         {activePage === 'contact' && <ContactPage />}
+        {activePage === 'checkout' && <CheckoutPage setActivePage={setActivePage} />}
       </main>
 
       {/* Luxury Footer */}
@@ -65,7 +76,6 @@ export const AppContent: React.FC = () => {
       <CartDrawer />
       <WishlistDrawer />
       <QuickViewModal />
-      <CheckoutModal />
       <ToastContainer />
 
       {/* Mobile Sticky 1-Tap Purchase Bar */}
