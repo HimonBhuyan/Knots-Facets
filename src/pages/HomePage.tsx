@@ -19,7 +19,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setActivePage }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const { openQuickView } = useCart();
 
-  const topBestSellers = CATALOG.slice(0, 4);
+  const topBestSellers = CATALOG.slice(0, 5);
 
   // Play animation trigger
   const playIntro = useCallback(() => {

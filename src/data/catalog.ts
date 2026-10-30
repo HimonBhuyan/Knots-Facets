@@ -178,6 +178,25 @@ export const CATALOG: Product[] = [
     description: 'Set of 4 heat-resistant tableware coasters with matching centre table mat. Earthy spiral ribbed stitches that insulate and soften tabletop sound.',
     inStock: true,
     tags: ['tableware', 'coasters', 'home', 'cotton']
+  },
+  {
+    id: 'kf-suncatcher-01',
+    title: 'Golden Hour Window Suncatcher Chime',
+    category: 'jewellery',
+    categoryLabel: 'Glass & Crystal Jewellery',
+    priceUSD: 62,
+    image: '/images/hero.jpg',
+    galleryImages: [
+      '/images/hero.jpg',
+      '/images/earrings_crystal.jpg',
+      '/images/necklace_pendant.jpg',
+      '/images/packaging_gifting.jpg'
+    ],
+    badge: 'Studio Favorite',
+    material: 'Hand-Cut Octagonal Crystal & Brass Chain',
+    description: 'Suspended from hammered raw brass links, this multi-faceted crystal prism scatters dancing morning rainbows across your room.',
+    inStock: true,
+    tags: ['suncatcher', 'crystal', 'prism', 'home']
   }
 ];
 
