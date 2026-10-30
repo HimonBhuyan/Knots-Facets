@@ -278,130 +278,290 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
     setTimeout(() => setCopiedOrder(false), 2000);
   };
 
-  // ==================== CONFIRMED RECEIPT VIEW ====================
+  // ==================== CONFIRMED PROFESSIONAL INVOICE & PROVENANCE RECEIPT ====================
   if (confirmedOrder) {
+    const invoiceNo = confirmedOrder.orderId.replace('KF-', 'INV-');
     return (
-      <div className="checkout-page-wrap">
-        <div className="checkout-receipt-card">
-          <div className="receipt-seal-badge">
-            <img src="/images/logo-mark.png" alt="Knots & Facets" width="64" height="64" />
-            <span className="receipt-verified-pill">
-              <CheckCircle2 size={14} /> PAYMENT VERIFIED &bull; ORDER RESERVED
-            </span>
-          </div>
-
-          <h1 className="receipt-title">Thank You, {confirmedOrder.customerName}.</h1>
-          <p className="receipt-subtitle">
-            Your handcrafted pieces are now scheduled at our Guwahati studio workbench. A confirmation email has been dispatched to <strong>{confirmedOrder.email}</strong>.
-          </p>
-
-          {/* Meta Bar */}
-          <div className="receipt-meta-grid">
-            <div className="receipt-meta-box">
-              <small>ATELIER ORDER ID</small>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <strong>#{confirmedOrder.orderId}</strong>
-                <button
-                  type="button"
-                  onClick={copyOrderId}
-                  className="receipt-copy-btn"
-                  title="Copy Order ID"
-                >
-                  {copiedOrder ? <Check size={13} /> : <Copy size={13} />}
-                </button>
-              </div>
-            </div>
-            <div className="receipt-meta-box">
-              <small>GATEWAY TRANSACTION REF</small>
-              <strong>{confirmedOrder.txnId}</strong>
-            </div>
-            <div className="receipt-meta-box">
-              <small>PAYMENT METHOD</small>
-              <strong>{confirmedOrder.paymentMethodLabel}</strong>
-            </div>
-            <div className="receipt-meta-box">
-              <small>DISPATCH DESTINATION</small>
-              <strong>
-                {confirmedOrder.city}, {confirmedOrder.country}
-              </strong>
+      <div className="checkout-page-wrap invoice-page-container">
+        {/* Non-Print Screen Action Bar */}
+        <div className="invoice-screen-toolbar">
+          <div className="invoice-toolbar-status">
+            <span className="invoice-status-dot" />
+            <div>
+              <strong>Payment Settled &amp; Reservation Confirmed</strong>
+              <span>A copy of this tax invoice &amp; provenance certificate has been sent to {confirmedOrder.email}</span>
             </div>
           </div>
-
-          {/* Itemized Receipt Table */}
-          <div className="receipt-items-box">
-            <h3>Reserved Studio Pieces</h3>
-            <div className="receipt-item-list">
-              {confirmedOrder.items.map(item => (
-                <div key={item.id} className="receipt-line-item">
-                  <div className="receipt-line-left">
-                    <img src={item.image} alt={item.title} />
-                    <div>
-                      <h4>{item.title}</h4>
-                      <small>Qty: {item.qty} &bull; Handcrafted with Wax Seal</small>
-                    </div>
-                  </div>
-                  <strong>{formatPrice(item.priceUSD * item.qty)}</strong>
-                </div>
-              ))}
-            </div>
-
-            <div className="receipt-totals">
-              <div className="receipt-total-row">
-                <span>Subtotal</span>
-                <span>{formatPrice(confirmedOrder.subtotalUSD)}</span>
-              </div>
-              {confirmedOrder.discountUSD > 0 && (
-                <div className="receipt-total-row discount">
-                  <span>Collector Discount</span>
-                  <span>−{formatPrice(confirmedOrder.discountUSD)}</span>
-                </div>
-              )}
-              <div className="receipt-total-row">
-                <span>Shipping ({confirmedOrder.shippingMethodLabel})</span>
-                <span>
-                  {confirmedOrder.shippingUSD === 0
-                    ? 'Complimentary'
-                    : formatPrice(confirmedOrder.shippingUSD)}
-                </span>
-              </div>
-              {confirmedOrder.giftWrapUSD > 0 && (
-                <div className="receipt-total-row">
-                  <span>Packaging / Service</span>
-                  <span>{formatPrice(confirmedOrder.giftWrapUSD)}</span>
-                </div>
-              )}
-              <div className="receipt-total-row grand">
-                <span>Total Amount Paid</span>
-                <strong>{formatPrice(confirmedOrder.totalUSD)}</strong>
-              </div>
-            </div>
-          </div>
-
-          {confirmedOrder.giftNote && (
-            <div className="receipt-gift-note">
-              <span>💌 Handwritten Calligraphy Note Enclosed:</span>
-              <p>“{confirmedOrder.giftNote}”</p>
-            </div>
-          )}
-
-          <div className="receipt-actions">
+          <div className="invoice-toolbar-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={copyOrderId}
+            >
+              {copiedOrder ? <Check size={15} /> : <Copy size={15} />}
+              <span>{copiedOrder ? 'Copied Order ID' : `Copy #${confirmedOrder.orderId}`}</span>
+            </button>
             <button
               type="button"
               className="btn-secondary"
               onClick={() => window.print()}
             >
-              <Printer size={16} />
-              <span>Print Official Receipt</span>
+              <Printer size={15} />
+              <span>Print / Save PDF Invoice</span>
             </button>
             <button
               type="button"
               className="btn-dark"
               onClick={() => setActivePage('shop')}
             >
-              <span>Continue Exploring Atelier</span>
+              <span>Return to Atelier</span>
             </button>
           </div>
         </div>
+
+        {/* Printable Luxury Archival Invoice Document */}
+        <article className="atelier-invoice-sheet" aria-label="Official Atelier Tax Invoice and Provenance Receipt">
+          {/* Corner Archival Ornaments */}
+          <span className="inv-corner tl" aria-hidden="true" />
+          <span className="inv-corner tr" aria-hidden="true" />
+          <span className="inv-corner bl" aria-hidden="true" />
+          <span className="inv-corner br" aria-hidden="true" />
+
+          {/* Subtle Center Emblem Watermark */}
+          <img
+            src="/images/logo-mark.png"
+            alt=""
+            className="inv-watermark"
+            aria-hidden="true"
+          />
+
+          {/* 1. Letterhead & Invoice Document Header */}
+          <header className="inv-header">
+            <div className="inv-brand-col">
+              <div className="inv-logo-lockup">
+                <img src="/images/logo-mark.png" alt="Knots & Facets" className="inv-logo-img" />
+                <div>
+                  <h1 className="inv-brand-name">KNOTS &amp; FACETS</h1>
+                  <span className="inv-brand-sub">ARTISAN JEWELRY &amp; ADORNMENTS</span>
+                </div>
+              </div>
+              <address className="inv-studio-address">
+                Atelier No. 14, Riverfront Craft Quarter, Uzan Bazar<br />
+                Guwahati, Assam 781001 &bull; India<br />
+                Studio Reg / GSTIN: <strong>18AABCK2026F1Z5</strong> &bull; concierge@knotsandfacets.com
+              </address>
+            </div>
+
+            <div className="inv-doc-col">
+              <div className="inv-paid-stamp">
+                <CheckCircle2 size={14} />
+                <span>PAID &bull; VERIFIED SETTLEMENT</span>
+              </div>
+              <h2 className="inv-doc-title">TAX INVOICE &amp; RECEIPT</h2>
+              <p className="inv-doc-sub">Original Copy for Collector &amp; Provenance Dossier</p>
+
+              <dl className="inv-doc-meta">
+                <div>
+                  <dt>Invoice Number</dt>
+                  <dd>{invoiceNo}</dd>
+                </div>
+                <div>
+                  <dt>Order Reference</dt>
+                  <dd>#{confirmedOrder.orderId}</dd>
+                </div>
+                <div>
+                  <dt>Date of Issue</dt>
+                  <dd>{confirmedOrder.date}</dd>
+                </div>
+                <div>
+                  <dt>Gateway Auth ID</dt>
+                  <dd>{confirmedOrder.txnId}</dd>
+                </div>
+              </dl>
+            </div>
+          </header>
+
+          {/* 2. Three-Column Party, Payment & Fulfilment Grid */}
+          <section className="inv-parties-grid">
+            <div className="inv-party-box">
+              <span className="inv-box-eyebrow">01 &bull; BILLED &amp; DISPATCHED TO</span>
+              <strong>{confirmedOrder.customerName}</strong>
+              <p>
+                {confirmedOrder.address}<br />
+                {confirmedOrder.city}, {confirmedOrder.state} {confirmedOrder.postalCode}<br />
+                {confirmedOrder.country}
+              </p>
+              <small>{confirmedOrder.email} &bull; {confirmedOrder.phone}</small>
+            </div>
+
+            <div className="inv-party-box">
+              <span className="inv-box-eyebrow">02 &bull; PAYMENT GATEWAY LEDGER</span>
+              <strong>{confirmedOrder.paymentMethodLabel}</strong>
+              <p>
+                Authorization: 3D Secure 2.0 / 256-Bit SSL<br />
+                Settlement Status: <strong>Captured in Full</strong><br />
+                Transaction Ref: {confirmedOrder.txnId}
+              </p>
+              <small>Zero pending balance due upon delivery</small>
+            </div>
+
+            <div className="inv-party-box">
+              <span className="inv-box-eyebrow">03 &bull; ATELIER FULFILMENT</span>
+              <strong>{confirmedOrder.shippingMethodLabel}</strong>
+              <p>
+                Origin: Guwahati Studio Workbench<br />
+                Presentation: Wax-Sealed Cotton &amp; Lavender<br />
+                Inspection: Passed Master Artisan QC
+              </p>
+              <small>Tracking link dispatched via email upon courier handover</small>
+            </div>
+          </section>
+
+          {/* 3. Formal Itemized Schedule Table */}
+          <section className="inv-table-section">
+            <table className="inv-items-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '48px' }}>#</th>
+                  <th>Piece &amp; Handcrafted Provenance</th>
+                  <th>Craft / HSN</th>
+                  <th style={{ textAlign: 'center' }}>Qty</th>
+                  <th style={{ textAlign: 'right' }}>Unit Price</th>
+                  <th style={{ textAlign: 'right' }}>Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {confirmedOrder.items.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td className="inv-td-num">{String(idx + 1).padStart(2, '0')}</td>
+                    <td>
+                      <div className="inv-item-cell">
+                        <img src={item.image} alt={item.title} />
+                        <div>
+                          <strong>{item.title}</strong>
+                          <span>
+                            {item.categoryLabel} &bull; SKU: {item.id.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="inv-td-code">
+                      {item.categoryLabel.toLowerCase().includes('crochet')
+                        ? '6307 · Organic Fibre'
+                        : '7117 · Faceted Crystal'}
+                    </td>
+                    <td style={{ textAlign: 'center', fontWeight: 600 }}>{item.qty}</td>
+                    <td style={{ textAlign: 'right' }}>{formatPrice(item.priceUSD)}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 700 }}>
+                      {formatPrice(item.priceUSD * item.qty)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 4. Bottom Split: Certificate of Authenticity (Left) + Financial Summary Ledger (Right) */}
+          <section className="inv-bottom-split">
+            <div className="inv-provenance-col">
+              {confirmedOrder.giftNote && (
+                <div className="inv-gift-note-card">
+                  <span>💌 ENCLOSED CALLIGRAPHY GIFT CARD</span>
+                  <p>“{confirmedOrder.giftNote}”</p>
+                </div>
+              )}
+
+              <div className="inv-certificate-box">
+                <div className="inv-cert-text">
+                  <span className="inv-box-eyebrow">CERTIFICATE OF HANDCRAFTED PROVENANCE</span>
+                  <p>
+                    We hereby certify that the pieces itemized on this invoice were individually handcrafted in small batches at the Knots &amp; Facets Atelier using lead-free faceted glass crystals, 14k gold-filled findings, and 100% unbleached organic cotton fibres.
+                  </p>
+                  <div className="inv-signature-row">
+                    <div>
+                      <span className="inv-sig-script">Himon Bhuyan</span>
+                      <small>MASTER ARTISAN &amp; FOUNDER, KNOTS &amp; FACETS</small>
+                    </div>
+                    {/* Vector Barcode */}
+                    <div className="inv-barcode" aria-hidden="true">
+                      <svg viewBox="0 0 140 34" width="128" height="30">
+                        <path
+                          d="M4 2h3v30H4zM10 2h1.5v30H10zM15 2h4v30h-4zM22 2h2v30h-2zM27 2h1.5v30H27zM32 2h5v30h-5zM40 2h2v30h-2zM45 2h3v30h-3zM52 2h1.5v30H52zM57 2h4v30h-4zM64 2h2v30h-2zM69 2h5v30h-5zM77 2h1.5v30H77zM82 2h3v30h-3zM88 2h2v30h-2zM94 2h4v30h-4zM101 2h1.5v30H101zM106 2h5v30h-5zM114 2h2v30h-2zM119 2h3v30h-3zM126 2h1.5v30H126zM131 2h4v30h-4z"
+                          fill="#29231F"
+                        />
+                      </svg>
+                      <span>{confirmedOrder.orderId}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Official Wax Seal Stamp SVG */}
+                <div className="inv-wax-stamp" aria-hidden="true">
+                  <svg viewBox="0 0 100 100" width="84" height="84">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#9B7765" strokeWidth="1.5" strokeDasharray="3 3" />
+                    <circle cx="50" cy="50" r="37" fill="none" stroke="#9B7765" strokeWidth="1.2" />
+                    <polygon points="50,22 68,50 50,78 32,50" fill="rgba(155, 119, 101, 0.12)" stroke="#9B7765" strokeWidth="1.4" />
+                    <text x="50" y="48" textAnchor="middle" fill="#7A5B4C" fontSize="6.5" fontWeight="700" letterSpacing="1.2">
+                      AUTHENTIC
+                    </text>
+                    <text x="50" y="57" textAnchor="middle" fill="#7A5B4C" fontSize="6" fontWeight="600" letterSpacing="1">
+                      ATELIER SEAL
+                    </text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="inv-ledger-col">
+              <div className="inv-ledger-box">
+                <div className="inv-ledger-row">
+                  <span>Merchandise Subtotal</span>
+                  <span>{formatPrice(confirmedOrder.subtotalUSD)}</span>
+                </div>
+                {confirmedOrder.discountUSD > 0 && (
+                  <div className="inv-ledger-row discount">
+                    <span>Collector Privilege Discount</span>
+                    <span>−{formatPrice(confirmedOrder.discountUSD)}</span>
+                  </div>
+                )}
+                <div className="inv-ledger-row">
+                  <span>Insured Dispatch &amp; Tracking</span>
+                  <span>
+                    {confirmedOrder.shippingUSD === 0
+                      ? 'Complimentary ($0.00)'
+                      : formatPrice(confirmedOrder.shippingUSD)}
+                  </span>
+                </div>
+                <div className="inv-ledger-row">
+                  <span>Wax-Sealed Gift Presentation</span>
+                  <span>
+                    {confirmedOrder.giftWrapUSD === 0
+                      ? 'Included'
+                      : formatPrice(confirmedOrder.giftWrapUSD)}
+                  </span>
+                </div>
+                <div className="inv-ledger-row">
+                  <span>Studio Craft Tax / GST</span>
+                  <span>Inclusive</span>
+                </div>
+                <div className="inv-ledger-total">
+                  <div>
+                    <span>TOTAL SETTLED</span>
+                    <small>Paid via {confirmedOrder.paymentMethodLabel.split('(')[0]}</small>
+                  </div>
+                  <strong>{formatPrice(confirmedOrder.totalUSD)}</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 5. Archival Footer Note */}
+          <footer className="inv-footer">
+            <span>KNOTS &amp; FACETS ATELIER &bull; HANDCRAFTED SLOW GOODS</span>
+            <span>14-DAY COMPLIMENTARY STUDIO CARE &amp; RE-POLISHING GUARANTEE</span>
+            <span>PAGE 01 OF 01</span>
+          </footer>
+        </article>
       </div>
     );
   }
@@ -1121,3 +1281,4 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
     </div>
   );
 };
+

@@ -4531,3 +4531,555 @@ h1 .l2 {
     display: none;
   }
 }
+
+/* ==========================================================================
+   LUXURY ATELIER TAX INVOICE & CERTIFICATE OF PROVENANCE RECEIPT
+   ========================================================================== */
+.invoice-page-container {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.invoice-screen-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.invoice-toolbar-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.invoice-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2E6F40;
+  box-shadow: 0 0 0 5px rgba(46, 111, 64, 0.16);
+  flex-shrink: 0;
+}
+
+.invoice-toolbar-status strong {
+  display: block;
+  font-size: 0.94rem;
+  color: var(--ink);
+}
+
+.invoice-toolbar-status span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.invoice-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Archival Invoice Sheet */
+.atelier-invoice-sheet {
+  position: relative;
+  background: #FFFCF8;
+  border: 1px solid rgba(41, 35, 31, 0.22);
+  outline: 1px solid rgba(155, 119, 101, 0.25);
+  outline-offset: -8px;
+  border-radius: 4px;
+  padding: clamp(32px, 5vw, 58px);
+  box-shadow: 0 24px 60px rgba(41, 35, 31, 0.1);
+  overflow: hidden;
+  color: var(--ink);
+}
+
+/* Corner Archival Ornaments */
+.inv-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--accent);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 2;
+}
+.inv-corner.tl {
+  top: 14px;
+  left: 14px;
+  border-width: 1.5px 0 0 1.5px;
+}
+.inv-corner.tr {
+  top: 14px;
+  right: 14px;
+  border-width: 1.5px 1.5px 0 0;
+}
+.inv-corner.bl {
+  bottom: 14px;
+  left: 14px;
+  border-width: 0 0 1.5px 1.5px;
+}
+.inv-corner.br {
+  bottom: 14px;
+  right: 14px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+/* Center Watermark */
+.inv-watermark {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: 380px;
+  height: 380px;
+  transform: translate(-50%, -50%);
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+  object-fit: contain;
+}
+
+.atelier-invoice-sheet > *:not(.inv-watermark):not(.inv-corner) {
+  position: relative;
+  z-index: 1;
+}
+
+/* 1. Letterhead Header */
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.inv-logo-lockup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.inv-logo-img {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+
+.inv-brand-name {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.inv-brand-sub {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: var(--accent-dark);
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.inv-studio-address {
+  font-style: normal;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.inv-doc-col {
+  text-align: right;
+}
+
+.inv-paid-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #2E6F40;
+  background: rgba(46, 111, 64, 0.08);
+  border: 1px solid rgba(46, 111, 64, 0.3);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.inv-doc-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.inv-doc-sub {
+  margin: 2px 0 14px;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.inv-doc-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 8px 22px;
+  text-align: right;
+  justify-content: end;
+}
+
+.inv-doc-meta dt {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+
+.inv-doc-meta dd {
+  margin: 1px 0 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 2. Three-Column Parties Grid */
+.inv-parties-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.inv-party-box {
+  background: rgba(241, 236, 228, 0.48);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.inv-box-eyebrow {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 6px;
+}
+
+.inv-party-box strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.inv-party-box p {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.inv-party-box p strong {
+  display: inline;
+  font-size: inherit;
+}
+
+.inv-party-box small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  border-top: 1px dashed var(--line);
+  padding-top: 6px;
+}
+
+/* 3. Itemized Schedule Table */
+.inv-table-section {
+  margin-bottom: 30px;
+  overflow-x: auto;
+}
+
+.inv-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.inv-items-table thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  padding: 12px 14px;
+  background: var(--surface-alt);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.inv-items-table tbody td {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.inv-td-num {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.inv-item-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inv-item-cell img {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.inv-item-cell strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.inv-item-cell span {
+  font-size: 0.74rem;
+  color: var(--ink-muted);
+}
+
+.inv-td-code {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 4. Bottom Split: Provenance Certificate + Financial Ledger */
+.inv-bottom-split {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.inv-gift-note-card {
+  background: rgba(155, 119, 101, 0.08);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+}
+
+.inv-gift-note-card span {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent-dark);
+}
+
+.inv-gift-note-card p {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.08rem;
+  color: var(--ink);
+}
+
+.inv-certificate-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 252, 248, 0.85);
+}
+
+.inv-cert-text p {
+  margin: 0 0 14px;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.inv-signature-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line-light);
+  padding-top: 10px;
+}
+
+.inv-sig-script {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.inv-signature-row small {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.inv-barcode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.inv-barcode span {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+  font-family: monospace;
+}
+
+.inv-wax-stamp {
+  flex-shrink: 0;
+}
+
+/* Ledger Summary Box */
+.inv-ledger-box {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inv-ledger-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+
+.inv-ledger-row.discount {
+  color: #2E6F40;
+  font-weight: 600;
+}
+
+.inv-ledger-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1.5px solid var(--ink);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.inv-ledger-total span {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.inv-ledger-total small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+}
+
+.inv-ledger-total strong {
+  font-family: var(--serif);
+  font-size: 1.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* 5. Archival Footer */
+.inv-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+  .inv-parties-grid,
+  .inv-bottom-split {
+    grid-template-columns: 1fr;
+  }
+  .inv-doc-col {
+    text-align: left;
+  }
+  .inv-doc-meta {
+    justify-content: start;
+    text-align: left;
+  }
+}
+
+/* Dedicated Print Stylesheet for Single-Page Archival Invoice PDF */
+@media print {
+  body {
+    background: #FFFFFF !important;
+  }
+  .announcement-bar,
+  .site-nav,
+  .site-footer,
+  .light-refraction-overlay,
+  .mobile-quick-purchase-bar,
+  .invoice-screen-toolbar,
+  .toast-container {
+    display: none !important;
+  }
+  .checkout-page-wrap {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  .atelier-invoice-sheet {
+    box-shadow: none !important;
+    border: 1px solid #29231F !important;
+    padding: 28px !important;
+  }
+}
