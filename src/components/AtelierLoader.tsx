@@ -6,8 +6,8 @@ interface AtelierLoaderProps {
 
 const STUDIO_STEPS = [
   'Spooling unbleached organic cotton...',
-  'Hand-cutting Bohemian glass facets...',
-  'Polishing 14k gold-filled wire...',
+  'Hand-cutting iridescent crystal facets...',
+  'Weaving the infinity artisan knot...',
   'Catching morning studio sunlight...'
 ];
 
@@ -18,13 +18,12 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
 
   useEffect(() => {
     const startTime = performance.now();
-    const duration = 2300; // 2.3s tactile craft sequence
+    const duration = 2300;
     let rafId: number;
 
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const raw = Math.min(elapsed / duration, 1);
-      // Smooth ease-in-out cubic curve
       const eased =
         raw < 0.5
           ? 4 * raw * raw * raw
@@ -67,6 +66,10 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
     STUDIO_STEPS.length - 1
   );
 
+  // Progress ring circumference (r = 96 -> 2 * pi * 96 ≈ 603.19)
+  const ringCircumference = 603.19;
+  const ringOffset = ringCircumference - (ringCircumference * progress) / 100;
+
   return (
     <div
       className={`atelier-loader ${isExiting ? 'is-exiting' : ''}`}
@@ -75,12 +78,8 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
       aria-label="Loading Knots and Facets Atelier"
     >
       {/* Top & Bottom Linen Curtain Panels for Split Reveal */}
-      <div className="loader-curtain loader-curtain-top" aria-hidden="true">
-        <div className="loader-grain" />
-      </div>
-      <div className="loader-curtain loader-curtain-bottom" aria-hidden="true">
-        <div className="loader-grain" />
-      </div>
+      <div className="loader-curtain loader-curtain-top" aria-hidden="true" />
+      <div className="loader-curtain loader-curtain-bottom" aria-hidden="true" />
 
       {/* Ambient Prismatic Caustic Orbs */}
       <div className="loader-caustics" aria-hidden="true">
@@ -96,7 +95,7 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
           <span className="loader-coords">GLASS REFRACTIONS &bull; SLOW FIBRE</span>
         </div>
 
-        {/* Animated Knot & Crystal Prism Emblem */}
+        {/* Official Emblem Mark + Orbiting Progress Halo */}
         <div className="loader-emblem-wrap">
           {/* Rotating Outer Astrolabe / Stitch Dial */}
           <svg
@@ -108,108 +107,67 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
             <circle
               cx="110"
               cy="110"
-              r="100"
-              stroke="rgba(155, 119, 101, 0.18)"
+              r="104"
+              stroke="rgba(155, 119, 101, 0.2)"
               strokeWidth="1"
               strokeDasharray="3 6"
             />
-            <circle
-              cx="110"
-              cy="110"
-              r="86"
-              stroke="rgba(41, 35, 31, 0.1)"
-              strokeWidth="0.75"
-            />
-            {/* Cardinal Diamond Nodes */}
-            <path d="M110 4 L113 10 L110 16 L107 10 Z" fill="#9B7765" opacity="0.65" />
-            <path d="M110 204 L113 210 L110 216 L107 210 Z" fill="#9B7765" opacity="0.65" />
-            <path d="M4 110 L10 113 L16 110 L10 107 Z" fill="#C29B38" opacity="0.65" />
-            <path d="M204 110 L210 113 L216 110 L210 107 Z" fill="#C29B38" opacity="0.65" />
+            <path d="M110 2 L113 8 L110 14 L107 8 Z" fill="#9B7765" opacity="0.7" />
+            <path d="M110 206 L113 212 L110 218 L107 212 Z" fill="#9B7765" opacity="0.7" />
+            <path d="M2 110 L8 113 L14 110 L8 107 Z" fill="#C29B38" opacity="0.7" />
+            <path d="M206 110 L212 113 L218 110 L212 107 Z" fill="#C29B38" opacity="0.7" />
           </svg>
 
-          {/* Core Self-Weaving Knot + Faceted Crystal SVG */}
+          {/* Smooth Progress Ring SVG */}
           <svg
-            className="loader-core-svg"
-            viewBox="0 0 120 120"
+            className="loader-progress-ring"
+            viewBox="0 0 220 220"
             fill="none"
             aria-hidden="true"
           >
             <defs>
-              <linearGradient id="prismGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#C29B38" stopOpacity="0.9" />
-                <stop offset="50%" stopColor="#9B7765" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#29231F" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shimmerFill" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(255, 240, 200, 0.55)" />
-                <stop offset="45%" stopColor="rgba(232, 188, 202, 0.38)" />
-                <stop offset="100%" stopColor="rgba(182, 218, 242, 0.45)" />
+              <linearGradient id="haloGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#E5B8C8" />
+                <stop offset="50%" stopColor="#9B7765" />
+                <stop offset="100%" stopColor="#A8D8DF" />
               </linearGradient>
             </defs>
-
-            {/* Prismatic Internal Glow */}
-            <polygon
-              className="loader-prism-glow"
-              points="60,16 92,44 60,104 28,44"
-              fill="url(#shimmerFill)"
-              style={{ opacity: Math.min(1, progress / 70) }}
-            />
-
-            {/* Outer Kite-Cut Crystal Facet */}
-            <path
-              className="loader-crystal-outer"
-              d="M60 16 L92 44 L60 104 L28 44 Z"
-              stroke="#29231F"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{
-                strokeDasharray: 240,
-                strokeDashoffset: 240 - (240 * Math.min(progress * 1.15, 100)) / 100
-              }}
-            />
-
-            {/* Inner Crystal Facet Lines */}
-            <path
-              className="loader-crystal-inner"
-              d="M28 44 H92 M44 44 L60 16 L76 44 M44 44 L60 104 L76 44"
-              stroke="#9B7765"
+            <circle
+              cx="110"
+              cy="110"
+              r="96"
+              stroke="rgba(41, 35, 31, 0.08)"
               strokeWidth="1.25"
+            />
+            <circle
+              cx="110"
+              cy="110"
+              r="96"
+              stroke="url(#haloGrad)"
+              strokeWidth="2"
               strokeLinecap="round"
-              strokeLinejoin="round"
+              transform="rotate(-90 110 110)"
               style={{
-                strokeDasharray: 260,
-                strokeDashoffset: 260 - (260 * Math.min(Math.max(progress - 12, 0) * 1.2, 100)) / 100
+                strokeDasharray: ringCircumference,
+                strokeDashoffset: ringOffset,
+                transition: 'stroke-dashoffset 0.08s linear'
               }}
             />
-
-            {/* Continuous Botanical Crochet Loop Weaving Through the Crystal */}
-            <path
-              className="loader-knot-thread"
-              d="M18 76 C18 54, 46 54, 46 76 C46 94, 14 96, 14 78 C14 44, 62 22, 96 42 C112 52, 98 88, 76 76 C60 68, 74 48, 92 56"
-              stroke="url(#prismGrad)"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              style={{
-                strokeDasharray: 340,
-                strokeDashoffset: 340 - (340 * progress) / 100
-              }}
-            />
-
-            {/* Sparkle Star on Top Facet Crown */}
-            <g
-              className="loader-sparkle"
-              style={{
-                opacity: progress > 45 ? 1 : 0,
-                transform: `translate(60px, 16px) scale(${0.5 + (progress / 100) * 0.65})`
-              }}
-            >
-              <path
-                d="M0 -8 L1.8 -1.8 L8 0 L1.8 1.8 L0 8 L-1.8 1.8 L-8 0 L-1.8 -1.8 Z"
-                fill="#C29B38"
-              />
-            </g>
           </svg>
+
+          {/* Official Crystal & Infinity Knot Logo Mark */}
+          <div className="loader-logo-mark-frame">
+            <img
+              src="/images/logo-mark.png"
+              alt="Knots & Facets Emblem"
+              className="loader-logo-mark-img"
+              style={{
+                opacity: 0.25 + (progress / 100) * 0.75,
+                transform: `scale(${0.88 + (progress / 100) * 0.12})`
+              }}
+            />
+            <div className="loader-logo-shimmer" aria-hidden="true" />
+          </div>
 
           {/* Floating Percentage Badge */}
           <div className="loader-pct-pill">
@@ -218,13 +176,14 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        {/* Brand Title & Dynamic Craft Status */}
+        {/* Brand Title & Official Subtitle */}
         <div className="loader-copy">
           <h2 className="loader-brand-title">
-            <span className="loader-title-italic">Knots</span>
+            <span className="loader-title-roman">KNOTS</span>
             <span className="loader-title-amp">&amp;</span>
-            <span className="loader-title-roman">Facets</span>
+            <span className="loader-title-roman">FACETS</span>
           </h2>
+          <span className="loader-brand-subtitle">ARTISAN JEWELRY &amp; ADORNMENTS</span>
           <p className="loader-step-text" key={stepIndex}>
             {STUDIO_STEPS[stepIndex]}
           </p>

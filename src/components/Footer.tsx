@@ -26,7 +26,20 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
     <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-brand">
-          <h3>Knots &amp; Facets</h3>
+          <div className="footer-brand-lockup" onClick={() => navTo('home')} role="button" tabIndex={0}>
+            <img
+              src="/images/logo-mark.png"
+              alt="Knots & Facets"
+              className="footer-logo-img"
+              width="52"
+              height="52"
+              loading="lazy"
+            />
+            <div>
+              <h3>Knots &amp; Facets</h3>
+              <span className="footer-sub-tagline">ARTISAN JEWELRY &amp; ADORNMENTS</span>
+            </div>
+          </div>
           <p>A dual-discipline handmade atelier based in Guwahati, Assam. Glass and crystal pieces that refract light, crochet accessories that bring warmth to daily life.</p>
           <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
             EST. GUWAHATI ATELIER · ALL RIGHTS RESERVED

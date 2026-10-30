@@ -55,14 +55,17 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           {/* Header */}
           <div className="sidebar-header">
             <div className="sidebar-brand" onClick={() => handleLinkClick('home')}>
-              <svg viewBox="0 0 40 40" fill="none" stroke="#29231F" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M20 4.5 31.5 14 20 35.5 8.5 14z" />
-                <path d="M8.5 14h23M14.2 14 20 4.5 25.8 14M14.2 14 20 35.5 25.8 14" stroke="#9B7765" strokeWidth="1" />
-                <path d="M5 27c0-6 8-6 8 0s-9 7-9 1 9-14 18-10 4 13-4 10" stroke="#29231F" strokeWidth="1.2" />
-              </svg>
+              <img
+                src="/images/logo-mark.png"
+                alt=""
+                className="sidebar-logo-img"
+                width="44"
+                height="44"
+                decoding="async"
+              />
               <div>
                 <h3>Knots &amp; Facets</h3>
-                <span className="sidebar-tagline">Handmade Atelier · Guwahati, Assam</span>
+                <span className="sidebar-tagline">Artisan Jewelry &amp; Adornments</span>
               </div>
             </div>
 
