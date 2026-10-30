@@ -12,6 +12,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { ToastContainer } from './components/ToastContainer';
 import { LightRefractionOverlay } from './components/LightRefractionOverlay';
 import { MobileQuickPurchaseBar } from './components/MobileQuickPurchaseBar';
+import { AtelierLoader } from './components/AtelierLoader';
 
 import { HomePage } from './pages/HomePage';
 import { ShopPage } from './pages/ShopPage';
@@ -28,6 +29,9 @@ export const AppContent: React.FC = () => {
 
   return (
     <div className="site-frame">
+      {/* Bespoke Knot & Crystal Prism Preloader */}
+      <AtelierLoader />
+
       {/* Prismatic Crystal Caustics Layer */}
       <LightRefractionOverlay />
 
