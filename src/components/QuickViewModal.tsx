@@ -1,22 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { X, Heart, Sparkles, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { X, Heart, Sparkles, ShieldCheck, Truck, Ruler, Star, CheckCircle2 } from 'lucide-react';
 
 export const QuickViewModal: React.FC = () => {
   const { quickViewProduct, closeQuickView, addToCart, openCheckout, formatPrice } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<'specs' | 'size' | 'reviews'>('specs');
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const imgWrapRef = useRef<HTMLDivElement>(null);
 
   if (!quickViewProduct) return null;
 
-  const images = quickViewProduct.galleryImages && quickViewProduct.galleryImages.length > 0
-    ? quickViewProduct.galleryImages
-    : [quickViewProduct.image];
+  const images =
+    quickViewProduct.galleryImages && quickViewProduct.galleryImages.length > 0
+      ? quickViewProduct.galleryImages
+      : [quickViewProduct.image];
 
   const currentImage = images[activeImageIndex] || quickViewProduct.image;
   const isSaved = isInWishlist(quickViewProduct.id);
@@ -31,7 +33,7 @@ export const QuickViewModal: React.FC = () => {
 
   return (
     <div className="modal-overlay active" onClick={closeQuickView}>
-      <div className="modal-content quickview-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content quickview-modal-content" onClick={e => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={closeQuickView} aria-label="Close details">
           <X size={18} />
         </button>
@@ -39,7 +41,6 @@ export const QuickViewModal: React.FC = () => {
         <div className="quickview-grid">
           {/* Left: Gallery & Zoom Lens */}
           <div className="quickview-gallery">
-            {/* Main Stage with Zoom Lens */}
             <div
               ref={imgWrapRef}
               className="quickview-main-img-wrap"
@@ -53,7 +54,6 @@ export const QuickViewModal: React.FC = () => {
                 className="quickview-main-img"
               />
 
-              {/* Macro Zoom Lens Overlay */}
               {isZooming && (
                 <div
                   className="quickview-zoom-lens"
@@ -70,7 +70,6 @@ export const QuickViewModal: React.FC = () => {
               </span>
             </div>
 
-            {/* Thumbnail Carousel Strip */}
             {images.length > 1 && (
               <div className="quickview-thumbs-strip">
                 {images.map((img, idx) => (
@@ -87,7 +86,7 @@ export const QuickViewModal: React.FC = () => {
             )}
           </div>
 
-          {/* Right: Atelier Details & Commerce Actions */}
+          {/* Right: Atelier Details, Tabs & Commerce Actions */}
           <div className="quickview-details">
             <div className="quickview-badge-row">
               <span className="quickview-category">{quickViewProduct.categoryLabel}</span>
@@ -97,31 +96,130 @@ export const QuickViewModal: React.FC = () => {
             </div>
 
             <h2 className="quickview-title">{quickViewProduct.title}</h2>
-            <div className="quickview-price">{formatPrice(quickViewProduct.priceUSD)}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
+              <div className="quickview-price" style={{ margin: 0 }}>
+                {formatPrice(quickViewProduct.priceUSD)}
+              </div>
+              <span className="qv-rating-pill" onClick={() => setActiveTab('reviews')}>
+                ★★★★★ <strong>4.9</strong> (28 Reviews)
+              </span>
+            </div>
 
             <p className="quickview-desc">{quickViewProduct.description}</p>
 
-            {/* Material & Craft Specifications */}
-            <div className="quickview-specs-card">
-              <div className="spec-row">
-                <ShieldCheck size={16} className="spec-icon" />
-                <div>
-                  <strong>Materials:</strong> {quickViewProduct.material}
-                </div>
-              </div>
-              <div className="spec-row">
-                <Sparkles size={16} className="spec-icon" />
-                <div>
-                  <strong>Provenance:</strong> 100% slow handcrafted in studio; zero mass manufacturing.
-                </div>
-              </div>
-              <div className="spec-row">
-                <Truck size={16} className="spec-icon" />
-                <div>
-                  <strong>Gifting:</strong> Arrives in wax-sealed keepsake gift box with dried lavender sprig.
-                </div>
-              </div>
+            {/* Interactive Detail Tabs */}
+            <div className="qv-tabs-nav">
+              <button
+                type="button"
+                className={`qv-tab-btn ${activeTab === 'specs' ? 'active' : ''}`}
+                onClick={() => setActiveTab('specs')}
+              >
+                <ShieldCheck size={14} />
+                <span>Provenance</span>
+              </button>
+              <button
+                type="button"
+                className={`qv-tab-btn ${activeTab === 'size' ? 'active' : ''}`}
+                onClick={() => setActiveTab('size')}
+              >
+                <Ruler size={14} />
+                <span>Size &amp; Fit Guide</span>
+              </button>
+              <button
+                type="button"
+                className={`qv-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                <Star size={14} />
+                <span>Reviews (28)</span>
+              </button>
             </div>
+
+            {activeTab === 'specs' && (
+              <div className="quickview-specs-card">
+                <div className="spec-row">
+                  <ShieldCheck size={16} className="spec-icon" />
+                  <div>
+                    <strong>Materials:</strong> {quickViewProduct.material}
+                  </div>
+                </div>
+                <div className="spec-row">
+                  <Sparkles size={16} className="spec-icon" />
+                  <div>
+                    <strong>Provenance:</strong> 100% slow handcrafted in Guwahati studio; zero mass manufacturing.
+                  </div>
+                </div>
+                <div className="spec-row">
+                  <Truck size={16} className="spec-icon" />
+                  <div>
+                    <strong>Gifting:</strong> Arrives in wax-sealed keepsake box with dried French lavender sprig.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'size' && (
+              <div className="quickview-specs-card qv-size-guide">
+                {quickViewProduct.category === 'jewellery' ? (
+                  <>
+                    <div className="qv-size-row">
+                      <span>Crystal Facet Drop</span>
+                      <strong>38 mm &times; 12 mm (Featherlight 4.2g)</strong>
+                    </div>
+                    <div className="qv-size-row">
+                      <span>Chain / Earwire Spec</span>
+                      <strong>18&quot; + 2&quot; Extender &bull; Hypoallergenic Nickel-Free</strong>
+                    </div>
+                    <div className="qv-size-row">
+                      <span>Care &amp; Storage</span>
+                      <strong>Store in enclosed velvet pouch; wipe facets with soft linen</strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="qv-size-row">
+                      <span>Handwoven Dimensions</span>
+                      <strong>36 cm W &times; 32 cm H &bull; 24 cm Strap Drop</strong>
+                    </div>
+                    <div className="qv-size-row">
+                      <span>Fibre Gauge &amp; Weight</span>
+                      <strong>4-Ply Unbleached Combed Cotton (Pre-shrunk)</strong>
+                    </div>
+                    <div className="qv-size-row">
+                      <span>Care Instructions</span>
+                      <strong>Gentle cold handwash with mild botanical soap; dry flat</strong>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="quickview-specs-card qv-reviews-list">
+                <div className="qv-review-item">
+                  <div className="qv-rev-head">
+                    <span>★★★★★</span>
+                    <small>
+                      <CheckCircle2 size={11} /> Verified Collector &bull; Clara M. (London)
+                    </small>
+                  </div>
+                  <p>
+                    “Even more luminous in person. When morning light hits the facets, tiny rainbows dance across my studio desk.”
+                  </p>
+                </div>
+                <div className="qv-review-item">
+                  <div className="qv-rev-head">
+                    <span>★★★★★</span>
+                    <small>
+                      <CheckCircle2 size={11} /> Verified Collector &bull; Ananya D. (Bengaluru)
+                    </small>
+                  </div>
+                  <p>
+                    “The wax-sealed lavender unboxing felt like opening a heirloom letter. Impeccable handmade quality.”
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Commerce Actions */}
             <div className="quickview-cta-row">

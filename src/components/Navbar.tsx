@@ -3,7 +3,7 @@ import { PageId, CurrencyCode } from '../types';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { CURRENCIES } from '../data/catalog';
-import { ShoppingBag, Menu, Heart } from 'lucide-react';
+import { ShoppingBag, Menu, Heart, Package } from 'lucide-react';
 import { SidebarDrawer } from './SidebarDrawer';
 import { StudioSoundscape } from './StudioSoundscape';
 
@@ -14,7 +14,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage, isHeroPage }) => {
-  const { cartCount, openCart, activeCurrency, setCurrency } = useCart();
+  const { cartCount, openCart, activeCurrency, setCurrency, orders, openOrders } = useCart();
   const { wishlistCount, openWishlist } = useWishlist();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -96,6 +96,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage, isHer
         <div className="nav-actions">
           {/* Ambient Soundscape Engine */}
           <StudioSoundscape />
+
+          {/* Live Order Tracker & History Button */}
+          <button
+            className="nav-icon-btn nav-orders-btn"
+            onClick={openOrders}
+            aria-label="Track Atelier Orders"
+            title="Track My Orders"
+          >
+            <Package size={18} />
+            {orders.length > 0 && (
+              <span className="badge-count" style={{ background: 'var(--ink)' }}>
+                {orders.length}
+              </span>
+            )}
+          </button>
 
           {/* Wishlist Heirlooms Button */}
           <button

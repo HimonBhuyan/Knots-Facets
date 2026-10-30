@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, CurrencyCode } from '../types';
+import { Product, CartItem, CurrencyCode, SavedOrder } from '../types';
 import { CATALOG, CURRENCIES } from '../data/catalog';
 
 interface Toast {
@@ -7,6 +7,47 @@ interface Toast {
   message: string;
   icon?: string;
 }
+
+const SAMPLE_INITIAL_ORDER: SavedOrder = {
+  orderId: 'KF-2026-841920',
+  txnId: 'pay_KF982A71BC',
+  date: 'Oct 28, 2026',
+  customerName: 'Aarav Sharma',
+  email: 'aarav.collector@example.com',
+  phone: '+91 98765 43210',
+  address: '42 Roseberry Lane, Uzan Bazar, Suite 3B',
+  city: 'Guwahati',
+  state: 'Assam',
+  postalCode: '781001',
+  country: 'India',
+  paymentMethodLabel: 'VISA••••8894 (256-Bit SSL Card Gateway)',
+  shippingMethodLabel: 'Priority Express Air Courier (2–3 Business Days)',
+  items: [
+    {
+      id: CATALOG[0].id,
+      title: CATALOG[0].title,
+      priceUSD: CATALOG[0].priceUSD,
+      image: CATALOG[0].image,
+      categoryLabel: CATALOG[0].categoryLabel,
+      qty: 1
+    },
+    {
+      id: CATALOG[3].id,
+      title: CATALOG[3].title,
+      priceUSD: CATALOG[3].priceUSD,
+      image: CATALOG[3].image,
+      categoryLabel: CATALOG[3].categoryLabel,
+      qty: 1
+    }
+  ],
+  subtotalUSD: 84,
+  discountUSD: 0,
+  shippingUSD: 0,
+  giftWrapUSD: 0,
+  totalUSD: 84,
+  giftNote: 'May these facets catch every morning sunrise.',
+  stageIndex: 2
+};
 
 interface CartContextType {
   cart: CartItem[];
@@ -16,6 +57,7 @@ interface CartContextType {
   setCurrency: (code: CurrencyCode) => void;
   formatPrice: (usd: number) => string;
   addToCart: (productId: string, qty?: number) => void;
+  addCustomItemToCart: (item: Omit<CartItem, 'qty'>, qty?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQty: (productId: string, delta: number) => void;
   clearCart: () => void;
@@ -28,6 +70,11 @@ interface CartContextType {
   isCheckoutOpen: boolean;
   openCheckout: () => void;
   closeCheckout: () => void;
+  orders: SavedOrder[];
+  saveOrder: (order: SavedOrder) => void;
+  isOrdersOpen: boolean;
+  openOrders: () => void;
+  closeOrders: () => void;
   toasts: Toast[];
   showToast: (message: string, icon?: string) => void;
 }
@@ -53,9 +100,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
+  const [orders, setOrders] = useState<SavedOrder[]>(() => {
+    try {
+      const saved = localStorage.getItem('kf_orders');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return [SAMPLE_INITIAL_ORDER];
+    } catch {
+      return [SAMPLE_INITIAL_ORDER];
+    }
+  });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
@@ -69,6 +130,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('kf_currency', activeCurrency);
     } catch {}
   }, [activeCurrency]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kf_orders', JSON.stringify(orders));
+    } catch {}
+  }, [orders]);
 
   const showToast = (message: string, icon = '✨') => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 6);
@@ -113,6 +180,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsCartOpen(true);
   };
 
+  const addCustomItemToCart = (customItem: Omit<CartItem, 'qty'>, qty = 1) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === customItem.id);
+      if (existing) {
+        return prev.map(item =>
+          item.id === customItem.id ? { ...item, qty: item.qty + qty } : item
+        );
+      }
+      return [...prev, { ...customItem, qty }];
+    });
+
+    showToast(`"${customItem.title}" added to your bag`, '✨');
+    setIsCartOpen(true);
+  };
+
   const updateQty = (productId: string, delta: number) => {
     setCart(prev => {
       return prev
@@ -137,6 +219,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCart([]);
   };
 
+  const saveOrder = (newOrder: SavedOrder) => {
+    setOrders(prev => [{ ...newOrder, stageIndex: 1 }, ...prev]);
+  };
+
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
@@ -148,6 +234,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsCheckoutOpen(true);
   };
   const closeCheckout = () => setIsCheckoutOpen(false);
+
+  const openOrders = () => setIsOrdersOpen(true);
+  const closeOrders = () => setIsOrdersOpen(false);
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const subtotalUSD = cart.reduce((sum, item) => sum + item.priceUSD * item.qty, 0);
@@ -162,6 +251,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCurrency: setActiveCurrency,
         formatPrice,
         addToCart,
+        addCustomItemToCart,
         removeFromCart,
         updateQty,
         clearCart,
@@ -174,6 +264,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isCheckoutOpen,
         openCheckout,
         closeCheckout,
+        orders,
+        saveOrder,
+        isOrdersOpen,
+        openOrders,
+        closeOrders,
         toasts,
         showToast
       }}

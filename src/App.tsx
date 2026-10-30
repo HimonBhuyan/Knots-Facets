@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PageId } from './types';
 import { CartProvider, useCart } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
+import { OrderTrackerDrawer } from './components/OrderTrackerDrawer';
 import { QuickViewModal } from './components/QuickViewModal';
 import { ToastContainer } from './components/ToastContainer';
 import { LightRefractionOverlay } from './components/LightRefractionOverlay';
@@ -21,9 +22,37 @@ import { CustomPage } from './pages/CustomPage';
 import { ContactPage } from './pages/ContactPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 
+const VALID_PAGES: PageId[] = ['home', 'shop', 'story', 'lookbook', 'custom', 'contact', 'checkout'];
+
+const getPageFromHash = (): PageId => {
+  const hash = window.location.hash.replace('#', '').trim().toLowerCase() as PageId;
+  return VALID_PAGES.includes(hash) ? hash : 'home';
+};
+
 export const AppContent: React.FC = () => {
-  const [activePage, setActivePage] = useState<PageId>('home');
+  const [activePage, setActivePageState] = useState<PageId>(() => getPageFromHash());
   const { isCheckoutOpen, closeCheckout } = useCart();
+
+  const setActivePage = useCallback((page: PageId) => {
+    setActivePageState(page);
+    const targetHash = page === 'home' ? '#home' : `#${page}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState(null, '', targetHash);
+    }
+  }, []);
+
+  // Sync browser Back / Forward buttons with activePage
+  useEffect(() => {
+    const onHashOrPop = () => {
+      setActivePageState(getPageFromHash());
+    };
+    window.addEventListener('popstate', onHashOrPop);
+    window.addEventListener('hashchange', onHashOrPop);
+    return () => {
+      window.removeEventListener('popstate', onHashOrPop);
+      window.removeEventListener('hashchange', onHashOrPop);
+    };
+  }, []);
 
   // Route to full Checkout & Payment Gateway page whenever checkout is triggered
   useEffect(() => {
@@ -32,7 +61,7 @@ export const AppContent: React.FC = () => {
       closeCheckout();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [isCheckoutOpen, closeCheckout]);
+  }, [isCheckoutOpen, closeCheckout, setActivePage]);
 
   // Trigger animations on page mount & route change
   usePageAnimations(activePage);
@@ -75,6 +104,7 @@ export const AppContent: React.FC = () => {
       {/* Interactive Global Drawers & Modals */}
       <CartDrawer />
       <WishlistDrawer />
+      <OrderTrackerDrawer />
       <QuickViewModal />
       <ToastContainer />
 

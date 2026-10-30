@@ -42,3 +42,27 @@ export interface LookbookItem {
   mood: 'crystal' | 'fibre' | 'atelier' | 'gifting';
   moodLabel: string;
 }
+
+export interface SavedOrder {
+  orderId: string;
+  txnId: string;
+  date: string;
+  customerName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  paymentMethodLabel: string;
+  shippingMethodLabel: string;
+  items: CartItem[];
+  subtotalUSD: number;
+  discountUSD: number;
+  shippingUSD: number;
+  giftWrapUSD: number;
+  totalUSD: number;
+  giftNote?: string;
+  stageIndex?: number; // 0..4 for 5-stage studio crafting & courier tracking
+}

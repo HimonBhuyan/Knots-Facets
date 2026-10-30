@@ -61,6 +61,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
     removeFromCart,
     addToCart,
     clearCart,
+    saveOrder,
     showToast
   } = useCart();
 
@@ -264,6 +265,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
       };
 
       setConfirmedOrder(orderSnapshot);
+      saveOrder(orderSnapshot);
       setGatewayStage(0);
       clearCart();
       window.scrollTo({ top: 0, behavior: 'smooth' });
