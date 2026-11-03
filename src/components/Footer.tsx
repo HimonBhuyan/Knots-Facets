@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             />
             <div>
               <h3>Knots &amp; Facets</h3>
-              <span className="footer-sub-tagline">ARTISAN JEWELRY &amp; ADORNMENTS</span>
+              <span className="footer-sub-tagline">HANDMADE CRAFTS &amp; ACCESSORIES</span>
             </div>
           </div>
           <p>A dual-discipline handmade atelier based in Guwahati, Assam. Glass and crystal pieces that refract light, crochet accessories that bring warmth to daily life.</p>

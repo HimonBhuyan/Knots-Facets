@@ -344,7 +344,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
                 <img src="/images/logo-mark.png" alt="Knots & Facets" className="inv-logo-img" />
                 <div>
                   <h1 className="inv-brand-name">KNOTS &amp; FACETS</h1>
-                  <span className="inv-brand-sub">ARTISAN JEWELRY &amp; ADORNMENTS</span>
+                  <span className="inv-brand-sub">HANDMADE CRAFTS &amp; ACCESSORIES</span>
                 </div>
               </div>
               <address className="inv-studio-address">

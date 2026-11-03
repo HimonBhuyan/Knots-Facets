@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="public/images/logo.jpg" alt="Knots & Facets — Artisan Jewelry & Adornments" width="100%" style="border-radius: 16px;" />
+<img src="public/images/logo.jpg" alt="Knots & Facets — Handmade Crafts & Accessories" width="100%" style="border-radius: 16px;" />
 
 <br />
 <br />
 
 # ✨ KNOTS & FACETS
 
-### *Artisan Jewelry & Adornments — Where Prismatic Light Meets Slow Fibre*
+### *Handmade Crafts & Accessories — Where Prismatic Light Meets Slow Fibre*
 
 [![Live Demo](https://img.shields.io/badge/LIVE_ATELIER-knots--facets.vercel.app-29231F?style=for-the-badge&logo=vercel&logoColor=FFFCF8)](https://knots-facets.vercel.app)
 [![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=29231F)](https://react.dev/)

@@ -183,7 +183,7 @@ export const AtelierLoader: React.FC<AtelierLoaderProps> = ({ onComplete }) => {
             <span className="loader-title-amp">&amp;</span>
             <span className="loader-title-roman">FACETS</span>
           </h2>
-          <span className="loader-brand-subtitle">ARTISAN JEWELRY &amp; ADORNMENTS</span>
+          <span className="loader-brand-subtitle">HANDMADE CRAFTS &amp; ACCESSORIES</span>
           <p className="loader-step-text" key={stepIndex}>
             {STUDIO_STEPS[stepIndex]}
           </p>

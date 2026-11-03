@@ -65,7 +65,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
               />
               <div>
                 <h3>Knots &amp; Facets</h3>
-                <span className="sidebar-tagline">Artisan Jewelry &amp; Adornments</span>
+                <span className="sidebar-tagline">Handmade Crafts &amp; Accessories</span>
               </div>
             </div>
 
