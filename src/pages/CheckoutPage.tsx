@@ -2,6 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { PageId, CartItem } from '../types';
 import { useCart } from '../context/CartContext';
 import { CATALOG } from '../data/catalog';
+import { OrderDirectLinkCard } from '../components/OrderDirectLinkCard';
+import { DeliveryDateChecker } from '../components/DeliveryDateChecker';
+import { calculateDeliveryEstimate } from '../utils/deliveryEstimator';
 import {
   ShieldCheck,
   Lock,
@@ -19,7 +22,8 @@ import {
   Check,
   Trash2,
   Plus,
-  Minus
+  Minus,
+  Package
 } from 'lucide-react';
 
 interface CheckoutPageProps {
@@ -62,6 +66,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
     addToCart,
     clearCart,
     saveOrder,
+    openOrders,
     showToast
   } = useCart();
 
@@ -298,6 +303,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
             <button
               type="button"
               className="btn-secondary"
+              onClick={() => openOrders(confirmedOrder.orderId)}
+            >
+              <Package size={15} />
+              <span>Track Parcel Live</span>
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
               onClick={copyOrderId}
             >
               {copiedOrder ? <Check size={15} /> : <Copy size={15} />}
@@ -319,6 +332,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
               <span>Return to Atelier</span>
             </button>
           </div>
+        </div>
+
+        {/* 1-Click Guest Tracking & Mobile QR Transfer Card (Screen Only) */}
+        <div className="invoice-guest-tracking-wrap no-print">
+          <OrderDirectLinkCard order={confirmedOrder} variant="invoice" />
         </div>
 
         {/* Printable Luxury Archival Invoice Document */}
@@ -413,7 +431,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
               <p>
                 Origin: Guwahati Studio Workbench<br />
                 Presentation: Wax-Sealed Cotton &amp; Lavender<br />
-                Inspection: Passed Master Artisan QC
+                Estimated Arrival: <strong>{calculateDeliveryEstimate(confirmedOrder.postalCode, 'jewellery', confirmedOrder.shippingMethodLabel.includes('Express') ? 'express' : 'standard')?.estimatedDeliveryRange || 'Within 3–5 Business Days'}</strong>
               </p>
               <small>Tracking link dispatched via email upon courier handover</small>
             </div>
@@ -827,6 +845,18 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
                 <p>Expedited priority air dispatch via DHL / BlueDart (2–3 business days).</p>
               </label>
             </div>
+
+            {/* Dynamic Estimated Delivery Date Widget */}
+            <DeliveryDateChecker
+              shippingTier={shippingMethod}
+              variant="checkout"
+              initialPin={contact.postalCode}
+              onEstimateChange={est => {
+                if (est && (!contact.postalCode || contact.postalCode !== est.pin)) {
+                  setContact(prev => ({ ...prev, postalCode: est.pin }));
+                }
+              }}
+            />
 
             {/* Signature Gift Box Upgrade */}
             <div

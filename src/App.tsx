@@ -31,7 +31,7 @@ const getPageFromHash = (): PageId => {
 
 export const AppContent: React.FC = () => {
   const [activePage, setActivePageState] = useState<PageId>(() => getPageFromHash());
-  const { isCheckoutOpen, closeCheckout } = useCart();
+  const { isCheckoutOpen, closeCheckout, openOrders, importOrderFromToken } = useCart();
 
   const setActivePage = useCallback((page: PageId) => {
     setActivePageState(page);
@@ -40,6 +40,40 @@ export const AppContent: React.FC = () => {
       window.history.pushState(null, '', targetHash);
     }
   }, []);
+
+  // Handle direct links: #orders?id=...&key=...&token=... or #track?id=...
+  useEffect(() => {
+    const handleOrderHash = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      if (hash.startsWith('#orders') || hash.startsWith('#track')) {
+        const queryIndex = hash.indexOf('?');
+        if (queryIndex !== -1) {
+          const searchParams = new URLSearchParams(hash.slice(queryIndex + 1));
+          const id = searchParams.get('id');
+          const token = searchParams.get('token');
+
+          if (token) {
+            importOrderFromToken(token);
+            return;
+          }
+
+          if (id) {
+            openOrders(id);
+          } else {
+            openOrders();
+          }
+        } else {
+          openOrders();
+        }
+      }
+    };
+
+    handleOrderHash();
+    window.addEventListener('hashchange', handleOrderHash);
+    return () => window.removeEventListener('hashchange', handleOrderHash);
+  }, [openOrders, importOrderFromToken]);
 
   // Sync browser Back / Forward buttons with activePage
   useEffect(() => {

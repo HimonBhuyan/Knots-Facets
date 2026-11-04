@@ -100,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage, isHer
           {/* Live Order Tracker & History Button */}
           <button
             className="nav-icon-btn nav-orders-btn"
-            onClick={openOrders}
+            onClick={() => openOrders()}
             aria-label="Track Atelier Orders"
             title="Track My Orders"
           >

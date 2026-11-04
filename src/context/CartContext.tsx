@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem, CurrencyCode, SavedOrder } from '../types';
 import { CATALOG, CURRENCIES } from '../data/catalog';
+import { verifyOrderOwnership, decodeOrderToken } from '../utils/orderSecurity';
 
 interface Toast {
   id: string;
@@ -8,7 +9,7 @@ interface Toast {
   icon?: string;
 }
 
-const SAMPLE_INITIAL_ORDER: SavedOrder = {
+export const SAMPLE_INITIAL_ORDER: SavedOrder = {
   orderId: 'KF-2026-841920',
   txnId: 'pay_KF982A71BC',
   date: 'Oct 28, 2026',
@@ -72,8 +73,12 @@ interface CartContextType {
   closeCheckout: () => void;
   orders: SavedOrder[];
   saveOrder: (order: SavedOrder) => void;
+  selectedOrderId: string | null;
+  setSelectedOrderId: (id: string | null) => void;
+  lookupGuestOrder: (orderId: string, contactDetail: string) => { success: boolean; order?: SavedOrder; error?: string };
+  importOrderFromToken: (token: string) => SavedOrder | null;
   isOrdersOpen: boolean;
-  openOrders: () => void;
+  openOrders: (orderId?: string | unknown) => void;
   closeOrders: () => void;
   toasts: Toast[];
   showToast: (message: string, icon?: string) => void;
@@ -117,6 +122,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
@@ -219,8 +225,94 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCart([]);
   };
 
+  // Master list of all orders created in atelier session / local registry
+  const getAllKnownOrders = (): SavedOrder[] => {
+    try {
+      const allSaved = localStorage.getItem('kf_all_orders');
+      const allList: SavedOrder[] = allSaved ? JSON.parse(allSaved) : [];
+      const map = new Map<string, SavedOrder>();
+      [SAMPLE_INITIAL_ORDER, ...orders, ...allList].forEach(ord => {
+        if (ord && ord.orderId) {
+          map.set(ord.orderId.trim().toUpperCase(), ord);
+        }
+      });
+      return Array.from(map.values());
+    } catch {
+      return [SAMPLE_INITIAL_ORDER, ...orders];
+    }
+  };
+
+  const persistToAllOrders = (ord: SavedOrder) => {
+    try {
+      const known = getAllKnownOrders();
+      const map = new Map<string, SavedOrder>();
+      known.forEach(o => map.set(o.orderId.trim().toUpperCase(), o));
+      map.set(ord.orderId.trim().toUpperCase(), ord);
+      localStorage.setItem('kf_all_orders', JSON.stringify(Array.from(map.values())));
+    } catch {}
+  };
+
   const saveOrder = (newOrder: SavedOrder) => {
-    setOrders(prev => [{ ...newOrder, stageIndex: 1 }, ...prev]);
+    const readyOrder = { ...newOrder, stageIndex: newOrder.stageIndex ?? 1 };
+    setOrders(prev => {
+      const filtered = prev.filter(o => o.orderId !== readyOrder.orderId);
+      return [readyOrder, ...filtered];
+    });
+    persistToAllOrders(readyOrder);
+    setSelectedOrderId(readyOrder.orderId);
+  };
+
+  const lookupGuestOrder = (orderId: string, contactDetail: string) => {
+    const cleanId = (orderId || '').trim().toUpperCase().replace(/^#/, '');
+    if (!cleanId) {
+      return { success: false, error: 'Please enter an Order ID (e.g. KF-2026-841920).' };
+    }
+    if (!contactDetail || !contactDetail.trim()) {
+      return { success: false, error: 'Please enter the Billing Email or Phone used during checkout.' };
+    }
+
+    const allOrders = getAllKnownOrders();
+    const candidate = allOrders.find(
+      o => o.orderId.trim().toUpperCase().replace(/^#/, '') === cleanId
+    );
+
+    if (!candidate) {
+      return {
+        success: false,
+        error: `No parcel found with Order ID #${cleanId}. Please verify the ID on your invoice or receipt.`
+      };
+    }
+
+    const isMatch = verifyOrderOwnership(candidate, contactDetail);
+    if (!isMatch) {
+      return {
+        success: false,
+        error: `The contact detail entered does not match Order #${cleanId}. Please verify your email or phone.`
+      };
+    }
+
+    setOrders(prev => {
+      const exists = prev.some(o => o.orderId === candidate.orderId);
+      return exists ? prev : [candidate, ...prev];
+    });
+    setSelectedOrderId(candidate.orderId);
+    showToast(`✨ Verified Order #${candidate.orderId} and linked to this device!`, '📦');
+    return { success: true, order: candidate };
+  };
+
+  const importOrderFromToken = (token: string): SavedOrder | null => {
+    const decoded = decodeOrderToken(token);
+    if (!decoded) return null;
+
+    setOrders(prev => {
+      const filtered = prev.filter(o => o.orderId !== decoded.orderId);
+      return [decoded, ...filtered];
+    });
+    persistToAllOrders(decoded);
+    setSelectedOrderId(decoded.orderId);
+    setIsOrdersOpen(true);
+    showToast(`✨ Order #${decoded.orderId} loaded via secure direct link!`, '🔗');
+    return decoded;
   };
 
   const openCart = () => setIsCartOpen(true);
@@ -235,7 +327,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   const closeCheckout = () => setIsCheckoutOpen(false);
 
-  const openOrders = () => setIsOrdersOpen(true);
+  const openOrders = (orderId?: string | unknown) => {
+    if (typeof orderId === 'string' && orderId) setSelectedOrderId(orderId);
+    setIsOrdersOpen(true);
+  };
   const closeOrders = () => setIsOrdersOpen(false);
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -266,6 +361,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         closeCheckout,
         orders,
         saveOrder,
+        selectedOrderId,
+        setSelectedOrderId,
+        lookupGuestOrder,
+        importOrderFromToken,
         isOrdersOpen,
         openOrders,
         closeOrders,

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { DeliveryDateChecker } from './DeliveryDateChecker';
 import { X, Heart, Sparkles, ShieldCheck, Truck, Ruler, Star, CheckCircle2 } from 'lucide-react';
 
 export const QuickViewModal: React.FC = () => {
@@ -220,6 +221,12 @@ export const QuickViewModal: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Estimated Delivery Date & PIN / Postal Code Checker Widget */}
+            <DeliveryDateChecker
+              category={quickViewProduct.category}
+              variant="card"
+            />
 
             {/* Commerce Actions */}
             <div className="quickview-cta-row">
