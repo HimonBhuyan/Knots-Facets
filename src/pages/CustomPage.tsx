@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { PageId } from '../types';
 import { CATALOG } from '../data/catalog';
-import { Sparkles, Gift, ShoppingBag, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Gift, ShoppingBag, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 interface CustomPageProps {
   setActivePage: (page: PageId) => void;
@@ -136,6 +136,21 @@ export const CustomPage: React.FC<CustomPageProps> = ({ setActivePage }) => {
 
   return (
     <div className="custom-page">
+      <div className="atelier-page-nav-bar">
+        <button
+          type="button"
+          className="atelier-page-back-btn"
+          onClick={() => {
+            setActivePage('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          aria-label="Back to Atelier Home"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Atelier</span>
+        </button>
+      </div>
+
       <section className="page-banner">
         <span className="eyebrow">Studio Atelier Commissions &amp; Gifting</span>
         <h1 className="page-title">Bespoke Creations &amp; Keepsake Builder</h1>

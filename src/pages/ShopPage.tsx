@@ -1,10 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { CATALOG } from '../data/catalog';
-import { Category } from '../types';
+import { Category, PageId } from '../types';
 import { ProductCard } from '../components/ProductCard';
-import { Search } from 'lucide-react';
+import { Search, ArrowLeft } from 'lucide-react';
 
-export const ShopPage: React.FC = () => {
+interface ShopPageProps {
+  setActivePage?: (page: PageId) => void;
+}
+
+export const ShopPage: React.FC<ShopPageProps> = ({ setActivePage }) => {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'title'>('featured');
@@ -34,6 +38,23 @@ export const ShopPage: React.FC = () => {
 
   return (
     <div className="shop-page">
+      {setActivePage && (
+        <div className="atelier-page-nav-bar">
+          <button
+            type="button"
+            className="atelier-page-back-btn"
+            onClick={() => {
+              setActivePage('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            aria-label="Back to Atelier Home"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Atelier</span>
+          </button>
+        </div>
+      )}
+
       <section className="page-banner">
         <span className="eyebrow">The Complete Atelier Catalog</span>
         <h1 className="page-title">Handcrafted Glass &amp; Slow Fibre</h1>

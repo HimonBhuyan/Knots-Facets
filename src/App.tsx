@@ -134,11 +134,11 @@ export const AppContent: React.FC = () => {
       {/* Main Pages with Fade In */}
       <main id="mainContent" key={activePage} className="page-transition-wrap">
         {activePage === 'home' && <HomePage setActivePage={setActivePage} />}
-        {activePage === 'shop' && <ShopPage />}
+        {activePage === 'shop' && <ShopPage setActivePage={setActivePage} />}
         {activePage === 'story' && <StoryPage setActivePage={setActivePage} />}
         {activePage === 'lookbook' && <LookbookPage setActivePage={setActivePage} />}
         {activePage === 'custom' && <CustomPage setActivePage={setActivePage} />}
-        {activePage === 'contact' && <ContactPage />}
+        {activePage === 'contact' && <ContactPage setActivePage={setActivePage} />}
         {activePage === 'checkout' && <CheckoutPage setActivePage={setActivePage} />}
       </main>
 

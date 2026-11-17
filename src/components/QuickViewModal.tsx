@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { DeliveryDateChecker } from './DeliveryDateChecker';
-import { X, Heart, Sparkles, ShieldCheck, Truck, Ruler, Star, CheckCircle2 } from 'lucide-react';
+import { X, Heart, Sparkles, ShieldCheck, Truck, Ruler, Star, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 export const QuickViewModal: React.FC = () => {
   const { quickViewProduct, closeQuickView, addToCart, openCheckout, formatPrice } = useCart();
@@ -35,9 +35,27 @@ export const QuickViewModal: React.FC = () => {
   return (
     <div className="modal-overlay active" onClick={closeQuickView}>
       <div className="modal-content quickview-modal-content" onClick={e => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={closeQuickView} aria-label="Close details">
-          <X size={18} />
-        </button>
+        {/* Floating Top Action Bar: Back Arrow on Left, Close on Right */}
+        <div className="qv-top-floating-bar">
+          <button
+            type="button"
+            className="qv-back-arrow-btn"
+            onClick={closeQuickView}
+            aria-label="Back to catalog"
+          >
+            <ArrowLeft size={18} />
+            <span>Back</span>
+          </button>
+
+          <button
+            type="button"
+            className="qv-close-round-btn"
+            onClick={closeQuickView}
+            aria-label="Close details"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
         <div className="quickview-grid">
           {/* Left: Gallery & Zoom Lens */}

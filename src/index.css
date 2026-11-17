@@ -6576,6 +6576,121 @@ h1 .l2 {
 }
 
 /* ==========================================================================
+   ATELIER SUBPAGE BREADCRUMB & BACK ARROW NAVIGATION
+   ========================================================================== */
+.atelier-page-nav-bar {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 20px clamp(18px, 4vw, 48px) 0;
+  display: flex;
+  align-items: center;
+}
+
+.atelier-page-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.atelier-page-back-btn:hover {
+  background: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+  transform: translateX(-2px);
+}
+
+/* Story Page Hero Frame */
+.story-hero-frame {
+  position: relative;
+  margin-bottom: 50px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  height: 380px;
+}
+.story-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(41,35,31,0.2) 0%, rgba(41,35,31,0.82) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(24px, 4vw, 48px);
+  color: var(--white);
+}
+.story-hero-overlay h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 400;
+  margin: 0 0 10px;
+  line-height: 1.15;
+}
+.story-hero-overlay p {
+  max-width: 580px;
+  font-size: 0.95rem;
+  margin: 0;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+/* QuickView Top Floating Bar */
+.qv-top-floating-bar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.qv-back-arrow-btn,
+.qv-close-round-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 252, 248, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(41, 35, 31, 0.15);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qv-close-round-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.qv-back-arrow-btn:hover,
+.qv-close-round-btn:hover {
+  background: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+}
+
+/* ==========================================================================
    COMPREHENSIVE MOBILE RESPONSIVENESS & ANTI-OVERFLOW SUITE
    Solves all screen clipping, modal overflow, and narrow viewport defects
    ========================================================================== */
@@ -6588,15 +6703,44 @@ h1 .l2 {
     width: 100% !important;
   }
 
-  /* 1. Announcement Bar — Prevent 540px text blow-out */
+  /* Subpage Back Button on Mobile */
+  .atelier-page-nav-bar {
+    padding: 12px 14px 0 !important;
+  }
+  .atelier-page-back-btn {
+    padding: 6px 14px !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* Story Page Hero on Mobile */
+  .story-hero-frame {
+    height: 280px !important;
+    margin-bottom: 24px !important;
+    border-radius: 16px !important;
+  }
+  .story-hero-overlay {
+    padding: 16px 14px !important;
+  }
+  .story-hero-overlay h2 {
+    font-size: 1.45rem !important;
+    margin-bottom: 6px !important;
+  }
+  .story-hero-overlay p {
+    font-size: 0.8rem !important;
+    line-height: 1.45 !important;
+  }
+
+  /* 1. Announcement Bar — Generous padding & breathing room from top upside */
   .announcement-bar {
-    padding: 7px 12px !important;
-    font-size: 0.72rem !important;
+    padding: 10px 16px !important;
+    font-size: 0.74rem !important;
     letter-spacing: 0.04em !important;
     overflow: hidden !important;
     max-width: 100vw !important;
     white-space: nowrap !important;
     justify-content: center !important;
+    line-height: 1.35 !important;
+    min-height: 36px !important;
   }
   .announcement-bar span:nth-child(2) {
     display: none !important; /* Hide secondary slogan on mobile */
@@ -6608,13 +6752,14 @@ h1 .l2 {
     max-width: 100% !important;
   }
 
-  /* 2. Top Navigation Bar */
+  /* 2. Top Navigation Bar — Comfortable height & never touching edges */
   .site-nav {
-    padding: 10px 14px !important;
+    padding: 12px 14px !important;
     gap: 8px !important;
     width: 100% !important;
     max-width: 100vw !important;
     box-sizing: border-box !important;
+    min-height: 56px !important;
   }
   .brand-text {
     font-size: 1.15rem !important;
@@ -6627,23 +6772,39 @@ h1 .l2 {
     display: none !important;
   }
   .soundscape-toggle {
-    padding: 7px 9px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
   .nav-actions {
-    gap: 6px !important;
+    gap: 7px !important;
   }
   .currency-select {
-    padding: 4px 6px !important;
-    font-size: 0.7rem !important;
+    display: none !important; /* Completely removed from mobile nav bar */
   }
   .nav-icon-btn {
-    width: 34px !important;
-    height: 34px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Mobile Home Hero Stage Breathing Room */
+  .hero {
+    padding: 10px 0 24px !important;
+    margin-bottom: 20px !important;
+  }
+  .stage {
+    width: calc(100% - 24px) !important;
+    margin: 4px 12px 18px !important;
+    height: clamp(260px, 42vh, 340px) !important;
+    border-radius: 18px !important;
   }
 
   /* 3. QuickView Modal — Full Responsiveness, Bottom-Sheet, and Horizontal Scroll Tabs */
   .modal-overlay {
-    padding: 10px 8px !important;
+    padding: 8px !important;
     align-items: flex-end !important;
   }
   .modal-content.quickview-modal-content {
@@ -6654,6 +6815,22 @@ h1 .l2 {
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
+    position: relative !important;
+  }
+  .qv-top-floating-bar {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    z-index: 70 !important;
+  }
+  .qv-back-arrow-btn {
+    padding: 7px 13px !important;
+    font-size: 0.76rem !important;
+  }
+  .qv-close-round-btn {
+    width: 34px !important;
+    height: 34px !important;
   }
   .quickview-grid {
     grid-template-columns: 1fr !important;

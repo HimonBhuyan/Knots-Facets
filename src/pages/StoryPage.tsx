@@ -1,5 +1,6 @@
 import React from 'react';
 import { PageId } from '../types';
+import { ArrowLeft } from 'lucide-react';
 
 interface StoryPageProps {
   setActivePage: (page: PageId) => void;
@@ -8,6 +9,21 @@ interface StoryPageProps {
 export const StoryPage: React.FC<StoryPageProps> = ({ setActivePage }) => {
   return (
     <div className="story-page">
+      <div className="atelier-page-nav-bar">
+        <button
+          type="button"
+          className="atelier-page-back-btn"
+          onClick={() => {
+            setActivePage('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          aria-label="Back to Atelier Home"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Atelier</span>
+        </button>
+      </div>
+
       <section className="page-banner">
         <span className="eyebrow">The Atelier Philosophy</span>
         <h1 className="page-title">The Patience of Knots,<br />The Clarity of Facets</h1>
@@ -18,17 +34,17 @@ export const StoryPage: React.FC<StoryPageProps> = ({ setActivePage }) => {
 
       <div className="section-block">
         {/* Full-Width Studio Hero Banner */}
-        <div className="story-hero" style={{ position: 'relative', marginBottom: '60px', borderRadius: 'var(--radius)', overflow: 'hidden', aspectRatio: '21 / 9', minHeight: '400px' }}>
+        <div className="story-hero story-hero-frame">
           <img
             src="/images/atelier_studio.jpg"
             alt="Knots &amp; Facets artisan workbench with crochet hooks and glass crystals"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(41,35,31,0.2) 0%, rgba(41,35,31,0.7) 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(30px, 5vw, 60px)', color: 'var(--white)' }}>
-            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', fontWeight: 400, margin: '0 0 10px' }}>
+          <div className="story-hero-overlay">
+            <h2>
               Inside our Guwahati Studio Workbench
             </h2>
-            <p style={{ maxWidth: '580px', fontSize: '1.05rem', margin: 0, opacity: 0.92 }}>
+            <p>
               Our atelier in Guwahati, Assam — where morning river sunlight reflects off uncut crystals, raw cotton spools, and hand-drawn jewelry sketches.
             </p>
           </div>

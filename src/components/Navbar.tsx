@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { PageId, CurrencyCode } from '../types';
+import { PageId } from '../types';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { CURRENCIES } from '../data/catalog';
 import { ShoppingBag, Menu, Heart, Package } from 'lucide-react';
 import { SidebarDrawer } from './SidebarDrawer';
 import { StudioSoundscape } from './StudioSoundscape';
@@ -14,7 +13,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage, isHeroPage }) => {
-  const { cartCount, openCart, activeCurrency, setCurrency, orders, openOrders } = useCart();
+  const { cartCount, openCart, orders, openOrders } = useCart();
   const { wishlistCount, openWishlist } = useWishlist();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -126,19 +125,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage, isHer
               </span>
             )}
           </button>
-
-          <select
-            className="currency-select"
-            value={activeCurrency}
-            onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-            aria-label="Select Currency"
-          >
-            {(Object.keys(CURRENCIES) as CurrencyCode[]).map(code => (
-              <option key={code} value={code}>
-                {CURRENCIES[code].symbol} {code}
-              </option>
-            ))}
-          </select>
 
           <button className="nav-icon-btn" onClick={openCart} aria-label="Open Shopping Bag">
             <ShoppingBag size={18} />

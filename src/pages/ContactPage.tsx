@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { Mail, MessageCircle, MapPin, Clock } from 'lucide-react';
+import { PageId } from '../types';
+import { Mail, MessageCircle, MapPin, Clock, ArrowLeft } from 'lucide-react';
 
-export const ContactPage: React.FC = () => {
+interface ContactPageProps {
+  setActivePage?: (page: PageId) => void;
+}
+
+export const ContactPage: React.FC<ContactPageProps> = ({ setActivePage }) => {
   const { showToast } = useCart();
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const [form, setForm] = useState({
@@ -44,6 +49,23 @@ export const ContactPage: React.FC = () => {
 
   return (
     <div className="contact-page">
+      {setActivePage && (
+        <div className="atelier-page-nav-bar">
+          <button
+            type="button"
+            className="atelier-page-back-btn"
+            onClick={() => {
+              setActivePage('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            aria-label="Back to Atelier Home"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Atelier</span>
+          </button>
+        </div>
+      )}
+
       <section className="page-banner">
         <span className="eyebrow">Direct Atelier Communication</span>
         <h1 className="page-title">Ask About a Piece</h1>

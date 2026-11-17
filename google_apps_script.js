@@ -155,14 +155,14 @@ function formatSheet() {
 
   // Automatically purge dummy/test orders from the sheet
   try {
-    var lastRow = sheet.getLastRow();
-    for (var r = lastRow; r >= 2; r--) {
-      var checkId = String(sheet.getRange(r, 2).getValue() || "").trim().toUpperCase();
-      if (checkId === "KF-2026-841920" || checkId === "KF-2026-181131" || checkId.indexOf("TEST") !== -1) {
-        sheet.deleteRow(r);
+      var lastRow = sheet.getLastRow();
+      for (var r = lastRow; r >= 2; r--) {
+        var checkId = String(sheet.getRange(r, 2).getValue() || "").trim().toUpperCase();
+        if (checkId === "KF-2026-841920" || checkId === "KF-2026-181131" || checkId.indexOf("TEST") !== -1) {
+          sheet.deleteRow(r);
+        }
       }
-    }
-  } catch (delErr) {}
+  } catch (delErr) { }
 
   // 7. Format Total Amount in Column J as Indian Rupee Currency
   sheet.getRange("J2:J1000").setNumberFormat("₹#,##0");

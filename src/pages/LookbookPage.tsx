@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageId, LookbookItem, Product } from '../types';
 import { LOOKBOOK_ITEMS, CATALOG } from '../data/catalog';
 import { useCart } from '../context/CartContext';
-import { X, ArrowRight, Sparkles, ShoppingBag, Eye } from 'lucide-react';
+import { X, ArrowRight, Sparkles, ShoppingBag, Eye, ArrowLeft } from 'lucide-react';
 
 interface LookbookPageProps {
   setActivePage: (page: PageId) => void;
@@ -26,6 +26,21 @@ export const LookbookPage: React.FC<LookbookPageProps> = ({ setActivePage }) => 
 
   return (
     <div className="lookbook-page">
+      <div className="atelier-page-nav-bar">
+        <button
+          type="button"
+          className="atelier-page-back-btn"
+          onClick={() => {
+            setActivePage('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          aria-label="Back to Atelier Home"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Atelier</span>
+        </button>
+      </div>
+
       <section className="page-banner">
         <span className="eyebrow">Visual Journal &amp; Interactive Shop-the-Look</span>
         <h1 className="page-title">Captured in Natural Light</h1>
