@@ -153,18 +153,16 @@ function formatSheet() {
   // 6. Fix Phone Numbers in Column E to Plain Text (Eliminates #ERROR!)
   sheet.getRange("E2:E1000").setNumberFormat("@");
 
-  // Fix existing Row 2 phone error if present
+  // Automatically purge dummy/test orders from the sheet
   try {
-    var phoneCell = sheet.getRange("E2");
-    if (phoneCell.getValue() === "#ERROR!" || !phoneCell.getValue()) {
-      phoneCell.setValue("'+91 98765 43210");
+    var lastRow = sheet.getLastRow();
+    for (var r = lastRow; r >= 2; r--) {
+      var checkId = String(sheet.getRange(r, 2).getValue() || "").trim().toUpperCase();
+      if (checkId === "KF-2026-841920" || checkId === "KF-2026-181131" || checkId.indexOf("TEST") !== -1) {
+        sheet.deleteRow(r);
+      }
     }
-    // Update Row 2 Status to valid dropdown value
-    var statusCell = sheet.getRange("L2");
-    if (!statusCell.getValue()) {
-      statusCell.setValue("Dispatched");
-    }
-  } catch (fixErr) {}
+  } catch (delErr) {}
 
   // 7. Format Total Amount in Column J as Indian Rupee Currency
   sheet.getRange("J2:J1000").setNumberFormat("₹#,##0");

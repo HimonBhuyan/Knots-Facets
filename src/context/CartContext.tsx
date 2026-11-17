@@ -9,47 +9,6 @@ interface Toast {
   icon?: string;
 }
 
-export const SAMPLE_INITIAL_ORDER: SavedOrder = {
-  orderId: 'KF-2026-841920',
-  txnId: 'pay_KF982A71BC',
-  date: 'Oct 28, 2026',
-  customerName: 'Aarav Sharma',
-  email: 'aarav.collector@example.com',
-  phone: '+91 98765 43210',
-  address: '42 Roseberry Lane, Uzan Bazar, Suite 3B',
-  city: 'Guwahati',
-  state: 'Assam',
-  postalCode: '781001',
-  country: 'India',
-  paymentMethodLabel: 'VISA••••8894 (256-Bit SSL Card Gateway)',
-  shippingMethodLabel: 'Priority Express Air Courier (2–3 Business Days)',
-  items: [
-    {
-      id: CATALOG[0].id,
-      title: CATALOG[0].title,
-      priceUSD: CATALOG[0].priceUSD,
-      image: CATALOG[0].image,
-      categoryLabel: CATALOG[0].categoryLabel,
-      qty: 1
-    },
-    {
-      id: CATALOG[3].id,
-      title: CATALOG[3].title,
-      priceUSD: CATALOG[3].priceUSD,
-      image: CATALOG[3].image,
-      categoryLabel: CATALOG[3].categoryLabel,
-      qty: 1
-    }
-  ],
-  subtotalUSD: 84,
-  discountUSD: 0,
-  shippingUSD: 0,
-  giftWrapUSD: 0,
-  totalUSD: 84,
-  giftNote: 'May these facets catch every morning sunrise.',
-  stageIndex: 2
-};
-
 interface CartContextType {
   cart: CartItem[];
   cartCount: number;
@@ -107,14 +66,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [orders, setOrders] = useState<SavedOrder[]>(() => {
     try {
-      const saved = localStorage.getItem('kf_orders');
+      const saved = localStorage.getItem('kf_production_orders');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter(o => o.orderId !== 'KF-2026-841920' && o.orderId !== 'KF-2026-181131');
+        }
       }
-      return [SAMPLE_INITIAL_ORDER];
+      return [];
     } catch {
-      return [SAMPLE_INITIAL_ORDER];
+      return [];
     }
   });
 
@@ -139,7 +100,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     try {
-      localStorage.setItem('kf_orders', JSON.stringify(orders));
+      localStorage.setItem('kf_production_orders', JSON.stringify(orders));
     } catch {}
   }, [orders]);
 
@@ -228,17 +189,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Master list of all orders created in atelier session / local registry
   const getAllKnownOrders = (): SavedOrder[] => {
     try {
-      const allSaved = localStorage.getItem('kf_all_orders');
+      const allSaved = localStorage.getItem('kf_production_all_orders');
       const allList: SavedOrder[] = allSaved ? JSON.parse(allSaved) : [];
       const map = new Map<string, SavedOrder>();
-      [SAMPLE_INITIAL_ORDER, ...orders, ...allList].forEach(ord => {
-        if (ord && ord.orderId) {
+      [...orders, ...allList].forEach(ord => {
+        if (ord && ord.orderId && ord.orderId !== 'KF-2026-841920' && ord.orderId !== 'KF-2026-181131') {
           map.set(ord.orderId.trim().toUpperCase(), ord);
         }
       });
       return Array.from(map.values());
     } catch {
-      return [SAMPLE_INITIAL_ORDER, ...orders];
+      return [...orders];
     }
   };
 
@@ -248,7 +209,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const map = new Map<string, SavedOrder>();
       known.forEach(o => map.set(o.orderId.trim().toUpperCase(), o));
       map.set(ord.orderId.trim().toUpperCase(), ord);
-      localStorage.setItem('kf_all_orders', JSON.stringify(Array.from(map.values())));
+      localStorage.setItem('kf_production_all_orders', JSON.stringify(Array.from(map.values())));
     } catch {}
   };
 
@@ -265,7 +226,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const lookupGuestOrder = (orderId: string, contactDetail: string) => {
     const cleanId = (orderId || '').trim().toUpperCase().replace(/^#/, '');
     if (!cleanId) {
-      return { success: false, error: 'Please enter an Order ID (e.g. KF-2026-841920).' };
+      return { success: false, error: 'Please enter an Order ID (e.g. KF-2026-XXXXXX).' };
     }
     if (!contactDetail || !contactDetail.trim()) {
       return { success: false, error: 'Please enter the Billing Email or Phone used during checkout.' };

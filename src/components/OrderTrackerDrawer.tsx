@@ -169,12 +169,6 @@ export const OrderTrackerDrawer: React.FC = () => {
     }, 450);
   };
 
-  const fillSampleOrder = () => {
-    setLookupId('KF-2026-841920');
-    setLookupContact('aarav.collector@example.com');
-    setLookupError(null);
-  };
-
   return (
     <>
       <div
@@ -458,7 +452,7 @@ export const OrderTrackerDrawer: React.FC = () => {
                     <KeyRound size={15} className="ot-field-icon" />
                     <input
                       type="text"
-                      placeholder="e.g. KF-2026-841920"
+                      placeholder="e.g. KF-2026-XXXXXX"
                       value={lookupId}
                       onChange={e => setLookupId(e.target.value)}
                       required
@@ -501,18 +495,6 @@ export const OrderTrackerDrawer: React.FC = () => {
                   )}
                 </button>
               </form>
-
-              {/* Sample testing shortcut */}
-              <div className="ot-sample-chip-card">
-                <span>Want to test guest lookup?</span>
-                <button
-                  type="button"
-                  className="ot-sample-chip-btn"
-                  onClick={fillSampleOrder}
-                >
-                  Fill Sample Order #KF-2026-841920 &rarr;
-                </button>
-              </div>
 
               <div className="ot-lookup-safety-notice">
                 <Shield size={14} />
