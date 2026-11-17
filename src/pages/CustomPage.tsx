@@ -63,9 +63,9 @@ const PALETTES = [
 ];
 
 const METALS = [
-  { title: '14k Gold-Filled (+ $15)', price: 15, desc: 'Warm heirloom glow, hypoallergenic & tarnish-resistant.' },
-  { title: '925 Sterling Silver (+ $10)', price: 10, desc: 'Cool luminous finish for crystal refractions.' },
-  { title: 'Antique Raw Brass (Included)', price: 0, desc: 'Earthy vintage patina with organic cotton cord.' }
+  { title: '14k Gold-Filled', price: 15, desc: 'Warm heirloom glow, hypoallergenic & tarnish-resistant.' },
+  { title: '925 Sterling Silver', price: 10, desc: 'Cool luminous finish for crystal refractions.' },
+  { title: 'Antique Raw Brass', price: 0, desc: 'Earthy vintage patina with organic cotton cord.' }
 ];
 
 const WAX_SEALS = [
@@ -108,7 +108,7 @@ export const CustomPage: React.FC<CustomPageProps> = ({ setActivePage }) => {
       title: `${selectedType.title} (${selectedPalette.title})`,
       priceUSD: totalPriceUSD,
       image: selectedType.image,
-      categoryLabel: `Bespoke • ${selectedMetal.title.split('(')[0].trim()}`
+      categoryLabel: `Bespoke • ${selectedMetal.title}`
     });
     if (proceedToCheckout) {
       openCheckout();
@@ -234,7 +234,7 @@ export const CustomPage: React.FC<CustomPageProps> = ({ setActivePage }) => {
                       role="button"
                       tabIndex={0}
                     >
-                      <h4>{metal.title}</h4>
+                      <h4>{metal.title} {metal.price > 0 ? `(+ ${formatPrice(metal.price)})` : '(Included)'}</h4>
                       <p>{metal.desc}</p>
                     </div>
                   ))}
@@ -310,7 +310,7 @@ export const CustomPage: React.FC<CustomPageProps> = ({ setActivePage }) => {
                     </div>
                     <div className="bp-spec-row">
                       <span>Metal Finish</span>
-                      <strong>{selectedMetal.title.split('(')[0].trim()}</strong>
+                      <strong>{selectedMetal.title}</strong>
                     </div>
                     <div className="bp-spec-row">
                       <span>Crafting Lead Time</span>

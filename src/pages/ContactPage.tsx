@@ -32,7 +32,7 @@ export const ContactPage: React.FC = () => {
     },
     {
       q: 'Do you offer international shipping?',
-      a: 'We ship worldwide with fully tracked postal services. Delivery typically takes 4–7 business days to North America and Europe, and 6–10 business days to Asia and Australasia. Complimentary tracked shipping is automatically unlocked on all orders over $80 USD.'
+      a: 'We ship worldwide with fully tracked postal services. Delivery typically takes 4–7 business days to North America and Europe, and 6–10 business days to Asia and Australasia. Complimentary tracked shipping is automatically unlocked on all orders over ₹6,500 / $80 USD.'
     }
   ];
 

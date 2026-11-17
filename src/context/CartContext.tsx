@@ -98,10 +98,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [activeCurrency, setActiveCurrency] = useState<CurrencyCode>(() => {
     try {
-      const saved = localStorage.getItem('kf_currency') as CurrencyCode;
-      return saved && CURRENCIES[saved] ? saved : 'USD';
+      const saved = localStorage.getItem('kf_currency_v2') as CurrencyCode;
+      return saved && CURRENCIES[saved] ? saved : 'INR';
     } catch {
-      return 'USD';
+      return 'INR';
     }
   });
 
@@ -133,7 +133,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     try {
-      localStorage.setItem('kf_currency', activeCurrency);
+      localStorage.setItem('kf_currency_v2', activeCurrency);
     } catch {}
   }, [activeCurrency]);
 

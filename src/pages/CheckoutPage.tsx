@@ -548,7 +548,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
                   <span>Insured Dispatch &amp; Tracking</span>
                   <span>
                     {confirmedOrder.shippingUSD === 0
-                      ? 'Complimentary ($0.00)'
+                      ? `Complimentary (${formatPrice(0)})`
                       : formatPrice(confirmedOrder.shippingUSD)}
                   </span>
                 </div>
@@ -871,7 +871,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
                   </strong>
                   <small>
                     {isFreeThresholdMet
-                      ? 'Complimentary with your $80+ order!'
+                      ? `Complimentary with your ${formatPrice(80)}+ order!`
                       : `Add for ${formatPrice(6)} (Free on orders over ${formatPrice(80)})`}
                   </small>
                 </div>

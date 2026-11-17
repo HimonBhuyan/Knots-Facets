@@ -1,10 +1,10 @@
 import { Product, LookbookItem, CurrencyCode, CurrencyConfig } from '../types';
 
 export const CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
+  INR: { symbol: '₹', rate: 86.5, label: 'INR (₹)' },
   USD: { symbol: '$', rate: 1.0, label: 'USD ($)' },
   EUR: { symbol: '€', rate: 0.92, label: 'EUR (€)' },
-  GBP: { symbol: '£', rate: 0.79, label: 'GBP (£)' },
-  INR: { symbol: '₹', rate: 86.5, label: 'INR (₹)' }
+  GBP: { symbol: '£', rate: 0.79, label: 'GBP (£)' }
 };
 
 export const CATALOG: Product[] = [

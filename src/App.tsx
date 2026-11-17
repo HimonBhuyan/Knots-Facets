@@ -31,7 +31,7 @@ const getPageFromHash = (): PageId => {
 
 export const AppContent: React.FC = () => {
   const [activePage, setActivePageState] = useState<PageId>(() => getPageFromHash());
-  const { isCheckoutOpen, closeCheckout, openOrders, importOrderFromToken } = useCart();
+  const { isCheckoutOpen, closeCheckout, openOrders, importOrderFromToken, formatPrice } = useCart();
 
   const setActivePage = useCallback((page: PageId) => {
     setActivePageState(page);
@@ -39,7 +39,17 @@ export const AppContent: React.FC = () => {
     if (window.location.hash !== targetHash) {
       window.history.pushState(null, '', targetHash);
     }
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, []);
+
+  // Always scroll to top whenever navigating between pages
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [activePage]);
 
   // Handle direct links: #orders?id=...&key=...&token=... or #track?id=...
   useEffect(() => {
@@ -110,7 +120,7 @@ export const AppContent: React.FC = () => {
 
       {/* Top Announcement Bar */}
       <div className="announcement-bar">
-        <span>✨ Complimentary Handmade Gift Box on Orders Over <em>$80</em></span>
+        <span>✨ Complimentary Handmade Gift Box on Orders Over <em>{formatPrice(80)}</em></span>
         <span>🌿 100% Slow Handcrafted in Studio</span>
       </div>
 
