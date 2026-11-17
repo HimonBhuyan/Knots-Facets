@@ -5,6 +5,7 @@ import { CATALOG } from '../data/catalog';
 import { OrderDirectLinkCard } from '../components/OrderDirectLinkCard';
 import { DeliveryDateChecker } from '../components/DeliveryDateChecker';
 import { calculateDeliveryEstimate } from '../utils/deliveryEstimator';
+import { syncOrderToGoogleSheet } from '../utils/googleSheetsSync';
 import {
   ShieldCheck,
   Lock,
@@ -271,6 +272,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ setActivePage }) => 
 
       setConfirmedOrder(orderSnapshot);
       saveOrder(orderSnapshot);
+      // Asynchronously sync the order details to Google Sheets (Admin View)
+      syncOrderToGoogleSheet(orderSnapshot);
       setGatewayStage(0);
       clearCart();
       window.scrollTo({ top: 0, behavior: 'smooth' });

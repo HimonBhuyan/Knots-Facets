@@ -5630,6 +5630,171 @@ h1 .l2 {
   color: var(--ink-soft);
 }
 
+.ot-admin-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ot-sync-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(42, 107, 72, 0.06);
+  border: 1px solid rgba(42, 107, 72, 0.18);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.ot-sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #2A6B48;
+}
+
+.ot-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2A6B48;
+  box-shadow: 0 0 0 0 rgba(42, 107, 72, 0.7);
+  animation: otPulse 2s infinite;
+}
+
+@keyframes otPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(42, 107, 72, 0.6); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(42, 107, 72, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(42, 107, 72, 0); }
+}
+
+.ot-refresh-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #fff;
+  border: 1px solid rgba(42, 107, 72, 0.25);
+  border-radius: 4px;
+  color: #2A6B48;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ot-refresh-sync-btn:hover {
+  background: #2A6B48;
+  color: #fff;
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ot-awb-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.ot-awb-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ot-awb-info strong {
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.ot-awb-info span {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+.ot-awb-info code {
+  background: var(--surface-alt);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--accent-dark);
+}
+.ot-awb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.ot-awb-link:hover {
+  opacity: 0.85;
+}
+
+.ot-admin-card {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #FFFBF5;
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+}
+.ot-admin-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.ot-admin-card p {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+.ot-admin-btn-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ot-reset-btn {
+  padding: 8px 12px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.ot-reset-btn:hover {
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+
 .ot-simulate-btn {
   display: flex;
   align-items: center;

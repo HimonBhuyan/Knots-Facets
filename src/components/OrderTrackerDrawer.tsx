@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import {
   X,
@@ -13,9 +13,12 @@ import {
   Phone,
   AlertCircle,
   ArrowRight,
-  BookmarkCheck
+  BookmarkCheck,
+  RefreshCw,
+  ExternalLink
 } from 'lucide-react';
 import { OrderDirectLinkCard } from './OrderDirectLinkCard';
+import { fetchOrderStatusFromGoogleSheet, SheetOrderStatus } from '../utils/googleSheetsSync';
 
 const TRACKING_STAGES = [
   {
@@ -64,6 +67,30 @@ export const OrderTrackerDrawer: React.FC = () => {
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
 
+  // Live Google Sheet sync & automated tracking state
+  const [liveSheetStatus, setLiveSheetStatus] = useState<Record<string, SheetOrderStatus>>({});
+  const [isSyncingSheet, setIsSyncingSheet] = useState(false);
+
+  // Secret admin mode: unlocked by URL (?admin=1 or #orders?admin=1) or triple-clicking the Package icon
+  const [isAdminMode, setIsAdminMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.location.hash.includes('admin') || window.location.search.includes('admin');
+  });
+  const [adminClicks, setAdminClicks] = useState(0);
+
+  const handleAdminSecretClick = () => {
+    const next = adminClicks + 1;
+    setAdminClicks(next);
+    if (next >= 3) {
+      setIsAdminMode(prev => {
+        const newState = !prev;
+        showToast(newState ? '🔐 Admin Studio Controls Enabled' : '🔒 Customer View Restored', '✨');
+        return newState;
+      });
+      setAdminClicks(0);
+    }
+  };
+
   // Simulation overrides for stage progression
   const [stageOverrides, setStageOverrides] = useState<Record<string, number>>({});
 
@@ -82,6 +109,25 @@ export const OrderTrackerDrawer: React.FC = () => {
     orders[0] ||
     null;
 
+  // Fetch real-time status from Google Sheets whenever an order is opened
+  const loadOrderStatus = useCallback((orderId: string, orderDate = '') => {
+    setIsSyncingSheet(true);
+    fetchOrderStatusFromGoogleSheet(orderId, orderDate)
+      .then(status => {
+        setLiveSheetStatus(prev => ({ ...prev, [orderId]: status }));
+        setIsSyncingSheet(false);
+      })
+      .catch(() => {
+        setIsSyncingSheet(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (activeOrder && isOrdersOpen) {
+      loadOrderStatus(activeOrder.orderId, activeOrder.date);
+    }
+  }, [activeOrder?.orderId, activeOrder?.date, isOrdersOpen, loadOrderStatus]);
+
   // When drawer opens, if an order was requested, make sure it is selected
   useEffect(() => {
     if (selectedOrderId && orders.some(o => o.orderId === selectedOrderId)) {
@@ -89,14 +135,20 @@ export const OrderTrackerDrawer: React.FC = () => {
     }
   }, [selectedOrderId, orders]);
 
+  const sheetData = activeOrder ? liveSheetStatus[activeOrder.orderId] : undefined;
   const currentStage = activeOrder
-    ? stageOverrides[activeOrder.orderId] ?? activeOrder.stageIndex ?? 1
+    ? stageOverrides[activeOrder.orderId] ?? sheetData?.stageIndex ?? activeOrder.stageIndex ?? 1
     : 1;
 
   const advanceStage = (orderId: string) => {
     const next = Math.min(4, currentStage + 1);
     setStageOverrides(prev => ({ ...prev, [orderId]: next }));
-    showToast(`📦 Order #${orderId} updated: ${TRACKING_STAGES[next].title}`, '✨');
+    showToast(`📦 [Admin] Order #${orderId} set to: ${TRACKING_STAGES[next].title}`, '✨');
+  };
+
+  const resetStage = (orderId: string) => {
+    setStageOverrides(prev => ({ ...prev, [orderId]: 0 }));
+    showToast(`📦 [Admin] Order #${orderId} reset to Stage 0`, '↺');
   };
 
   const handleGuestLookupSubmit = (e: React.FormEvent) => {
@@ -136,8 +188,15 @@ export const OrderTrackerDrawer: React.FC = () => {
         {/* Drawer Header */}
         <div className="cart-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Package size={20} color="#9B7765" />
+            <span
+              onClick={handleAdminSecretClick}
+              style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
+              title="Knots & Facets Atelier Tracker"
+            >
+              <Package size={20} color="#9B7765" />
+            </span>
             <h2>Atelier Order Tracker</h2>
+            {isAdminMode && <span className="ot-admin-chip">ADMIN</span>}
           </div>
           <button className="cart-close-btn" onClick={closeOrders} aria-label="Close Order Tracker">
             <X size={18} />
@@ -240,6 +299,52 @@ export const OrderTrackerDrawer: React.FC = () => {
                     <span>Verified Guest Session &bull; Linked to this device</span>
                   </div>
 
+                  {/* Live Sync Status Banner */}
+                  <div className="ot-sync-bar">
+                    <div className="ot-sync-indicator">
+                      <span className="ot-pulse-dot" />
+                      <span>
+                        {sheetData?.source === 'google_sheets'
+                          ? `Live Sheet Synced • ${sheetData.statusText}`
+                          : 'Automated Atelier Tracking'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="ot-refresh-sync-btn"
+                      onClick={() => {
+                        loadOrderStatus(activeOrder.orderId, activeOrder.date);
+                        showToast('Checking latest studio dispatch status...', '🔄');
+                      }}
+                      title="Check for real-time updates from studio"
+                    >
+                      <RefreshCw size={12} className={isSyncingSheet ? 'spinning' : ''} />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
+
+                  {/* Courier AWB Tracking Card (shown if AWB is entered in Google Sheet) */}
+                  {sheetData?.trackingAwb && (
+                    <div className="ot-awb-card">
+                      <Truck size={18} color="#9B7765" />
+                      <div className="ot-awb-info">
+                        <strong>Dispatched via {sheetData.courier || 'Priority Courier'}</strong>
+                        <span>AWB Tracking: <code>{sheetData.trackingAwb}</code></span>
+                      </div>
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(
+                          `${sheetData.courier || 'courier'} tracking ${sheetData.trackingAwb}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ot-awb-link"
+                      >
+                        <span>Track</span>
+                        <ExternalLink size={12} />
+                      </a>
+                    </div>
+                  )}
+
                   {/* 1-Click Direct Link & Scannable QR Code */}
                   <OrderDirectLinkCard order={activeOrder} variant="drawer" />
 
@@ -268,15 +373,34 @@ export const OrderTrackerDrawer: React.FC = () => {
                     })}
                   </div>
 
-                  {currentStage < 4 && (
-                    <button
-                      type="button"
-                      className="ot-simulate-btn"
-                      onClick={() => advanceStage(activeOrder.orderId)}
-                    >
-                      <Sparkles size={14} />
-                      <span>Simulate Next Studio Stage &rarr;</span>
-                    </button>
+                  {/* Admin Only Override Controls — Never shown to regular customers */}
+                  {isAdminMode && (
+                    <div className="ot-admin-card">
+                      <div className="ot-admin-card-head">
+                        <Shield size={14} />
+                        <strong>Admin Studio Controls (Visible Only to You)</strong>
+                      </div>
+                      <p>Customers have zero control over this. Use buttons below or update your Google Sheet.</p>
+                      <div className="ot-admin-btn-row">
+                        {currentStage < 4 && (
+                          <button
+                            type="button"
+                            className="ot-simulate-btn"
+                            onClick={() => advanceStage(activeOrder.orderId)}
+                          >
+                            <Sparkles size={14} />
+                            <span>Advance Stage &rarr;</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="ot-reset-btn"
+                          onClick={() => resetStage(activeOrder.orderId)}
+                        >
+                          Reset to Stage 0
+                        </button>
+                      </div>
+                    </div>
                   )}
 
                   {/* Reserved Pieces in this Order */}
