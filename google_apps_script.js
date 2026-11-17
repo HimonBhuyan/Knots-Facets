@@ -25,6 +25,20 @@
  *   the customer's order tracker will immediately show: "Dispatched via Delhivery (AWB: DLV12345)".
  */
 
+// Your Knots & Facets Google Sheet ID (from your browser URL)
+var SPREADSHEET_ID = "1adBeEeapIzq6UXbx6gdlUNThr8P7hKpV6WF77KH2cas";
+
+function getTargetSheet() {
+  try {
+    if (SPREADSHEET_ID) {
+      return SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+    }
+  } catch (err) {
+    // fallback if openById fails
+  }
+  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+}
+
 function setupHeadersIfBlank(sheet) {
   if (sheet.getLastRow() === 0) {
     var headers = [
@@ -52,14 +66,19 @@ function setupHeadersIfBlank(sheet) {
 // Handles incoming customer orders from the website checkout
 function doPost(e) {
   try {
-    var lock = LockService.getScriptLock();
-    lock.waitLock(10000);
-
-    var doc = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = doc.getActiveSheet();
+    var sheet = getTargetSheet();
     setupHeadersIfBlank(sheet);
 
-    var data = JSON.parse(e.postData.contents);
+    var data = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (pErr) {
+        data = e.parameter || {};
+      }
+    } else if (e && e.parameter) {
+      data = e.parameter;
+    }
 
     var row = [
       data.date || new Date().toLocaleString(),
@@ -80,7 +99,6 @@ function doPost(e) {
     ];
 
     sheet.appendRow(row);
-    lock.releaseLock();
 
     return ContentService.createTextOutput(JSON.stringify({ result: "success", orderId: data.orderId }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -94,8 +112,7 @@ function doPost(e) {
 function doGet(e) {
   try {
     var orderId = (e.parameter.orderId || "").trim().toUpperCase();
-    var doc = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = doc.getActiveSheet();
+    var sheet = getTargetSheet();
     var values = sheet.getDataRange().getValues();
 
     if (values.length <= 1) {
@@ -132,3 +149,4 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
