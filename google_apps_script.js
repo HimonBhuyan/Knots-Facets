@@ -41,26 +41,107 @@ function getTargetSheet() {
 
 function setupHeadersIfBlank(sheet) {
   if (sheet.getLastRow() === 0) {
-    var headers = [
-      "Timestamp",
-      "Order ID",
-      "Customer Name",
-      "Email",
-      "Phone",
-      "City",
-      "State",
-      "Postal Code",
-      "Items Purchased",
-      "Total Amount (₹)",
-      "Payment Method",
-      "Status",
-      "Courier",
-      "Tracking AWB",
-      "Customer Notes"
-    ];
-    sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#F5EFEB");
+    formatSheet();
   }
+}
+
+/**
+ * Run this function once in Apps Script (Click 'Run' button above)
+ * to instantly style the sheet, fix columns, and add the Status & Courier dropdowns!
+ */
+function formatSheet() {
+  var sheet = getTargetSheet();
+
+  var headers = [
+    "Timestamp",
+    "Order ID",
+    "Customer Name",
+    "Email",
+    "Phone",
+    "City",
+    "State",
+    "Postal Code",
+    "Items Purchased",
+    "Total Amount (₹)",
+    "Payment Method",
+    "Status",
+    "Courier",
+    "Tracking AWB",
+    "Customer Notes"
+  ];
+
+  // If row 1 is empty or doesn't have headers, set them
+  var headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setValues([headers]);
+  headerRange
+    .setFontWeight("bold")
+    .setBackground("#29231F") // Atelier espresso theme
+    .setFontColor("#FFFCF8")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sheet.setRowHeight(1, 36);
+
+  // 1. Freeze top header row so it stays visible while scrolling
+  sheet.setFrozenRows(1);
+
+  // 2. Status Dropdown (Column L - Rows 2 to 1000)
+  var statusOptions = [
+    "Order Reserved",
+    "Crafting & Stitching",
+    "Master Artisan QC",
+    "Dispatched",
+    "Delivered"
+  ];
+  var statusRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(statusOptions, true)
+    .setAllowInvalid(false)
+    .build();
+  sheet.getRange("L2:L1000").setDataValidation(statusRule);
+
+  // 3. Courier Dropdown (Column M - Rows 2 to 1000)
+  var courierOptions = [
+    "Delhivery",
+    "Blue Dart",
+    "DTDC",
+    "India Post",
+    "Shiprocket",
+    "Speed Post"
+  ];
+  var courierRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(courierOptions, true)
+    .setAllowInvalid(true)
+    .build();
+  sheet.getRange("M2:M1000").setDataValidation(courierRule);
+
+  // 4. Format Column E (Phone) as Plain Text to avoid #ERROR!
+  sheet.getRange("E1:E1000").setNumberFormat("@");
+
+  // 5. Format Column J (Total Amount) as Indian Rupee
+  sheet.getRange("J2:J1000").setNumberFormat("₹#,##0");
+
+  // 6. Set clean column widths
+  sheet.setColumnWidth(1, 160); // Timestamp
+  sheet.setColumnWidth(2, 140); // Order ID
+  sheet.setColumnWidth(3, 150); // Customer Name
+  sheet.setColumnWidth(4, 200); // Email
+  sheet.setColumnWidth(5, 140); // Phone
+  sheet.setColumnWidth(6, 120); // City
+  sheet.setColumnWidth(7, 100); // State
+  sheet.setColumnWidth(8, 100); // Postal Code
+  sheet.setColumnWidth(9, 280); // Items Purchased
+  sheet.setColumnWidth(10, 130); // Total Amount
+  sheet.setColumnWidth(11, 180); // Payment Method
+  sheet.setColumnWidth(12, 180); // Status Dropdown
+  sheet.setColumnWidth(13, 130); // Courier Dropdown
+  sheet.setColumnWidth(14, 160); // Tracking AWB
+  sheet.setColumnWidth(15, 220); // Customer Notes
+
+  // 7. Text Wrap & Alignments
+  sheet.getRange("I2:I1000").setWrap(true);
+  sheet.getRange("O2:O1000").setWrap(true);
+  sheet.getRange("B2:B1000").setHorizontalAlignment("center").setFontWeight("bold");
+  sheet.getRange("J2:J1000").setHorizontalAlignment("right").setFontWeight("bold");
+  sheet.getRange("L2:L1000").setHorizontalAlignment("center").setFontWeight("bold");
 }
 
 // Handles incoming customer orders from the website checkout
@@ -80,12 +161,14 @@ function doPost(e) {
       data = e.parameter;
     }
 
+    var cleanPhone = data.phone ? "'" + String(data.phone).replace(/^'+/, '') : "";
+
     var row = [
       data.date || new Date().toLocaleString(),
       data.orderId || "",
       data.customerName || "",
       data.email || "",
-      data.phone || "",
+      cleanPhone,
       data.city || "",
       data.state || "",
       data.postalCode || "",
@@ -93,12 +176,17 @@ function doPost(e) {
       data.totalINR || data.totalUSD || 0,
       data.paymentMethod || "",
       data.initialStatus || "Order Reserved",
-      "", // Courier (Admin fills when dispatched)
-      "", // Tracking AWB (Admin fills when dispatched)
+      "", // Courier (Admin selects from dropdown)
+      "", // Tracking AWB (Admin enters tracking code)
       data.giftNote || ""
     ];
 
     sheet.appendRow(row);
+
+    // Apply data validation to newly created row if needed
+    var lastRow = sheet.getLastRow();
+    sheet.getRange(lastRow, 5).setNumberFormat("@"); // Phone plain text
+    sheet.getRange(lastRow, 10).setNumberFormat("₹#,##0"); // Currency format
 
     return ContentService.createTextOutput(JSON.stringify({ result: "success", orderId: data.orderId }))
       .setMimeType(ContentService.MimeType.JSON);

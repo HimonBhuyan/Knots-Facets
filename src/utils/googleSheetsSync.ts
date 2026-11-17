@@ -70,7 +70,7 @@ export const syncOrderToGoogleSheet = async (order: SavedOrder): Promise<{ succe
     timestamp: new Date().toISOString(),
     customerName: order.customerName,
     email: order.email,
-    phone: order.phone,
+    phone: `'${(order.phone || '').replace(/^'+/, '')}`,
     address: order.address,
     city: order.city,
     state: order.state,
