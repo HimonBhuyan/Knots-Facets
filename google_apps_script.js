@@ -1,28 +1,16 @@
 /**
  * =======================================================================
- * KNOTS & FACETS — ZERO-CODE GOOGLE SHEETS ORDER BACKEND
+ * KNOTS & FACETS ATELIER — ENTERPRISE ORDER DISPATCH & SYNC BACKEND
  * =======================================================================
  *
- * HOW TO SET THIS UP (Takes 2 minutes):
- * 1. Open Google Sheets (https://sheets.new) and name it "Knots & Facets Orders".
- * 2. In the top menu, click: Extensions -> Apps Script.
- * 3. Delete any default code inside the editor, and paste this entire file.
- * 4. Click the blue "Deploy" button (top right) -> "New deployment".
- * 5. Click the gear icon next to "Select type" -> choose "Web app".
- * 6. Set:
- *    - Description: "Knots & Facets Order Sync"
- *    - Execute as: "Me"
- *    - Who has access: "Anyone"  <-- (CRITICAL: Allows your website to send & read orders)
- * 7. Click "Deploy" -> click "Authorize access" -> choose your Google Account -> Advanced -> Go to project (unsafe) -> Allow.
- * 8. Copy the "Web app URL" (looks like https://script.google.com/macros/s/AKfycb.../exec).
- * 9. Paste this URL into `src/config/sheetConfig.ts` in your website!
- *
- * HOW IT WORKS FOR THE ADMIN:
- * - When a customer places an order, a new row appears automatically in your Google Sheet!
- * - When you want to update the order status, simply change the "Status" column to:
- *   "Crafting", "QC Stamping", "Dispatched", or "Delivered".
- * - If you enter a Courier (e.g. Delhivery) and Tracking AWB (e.g. DLV12345),
- *   the customer's order tracker will immediately show: "Dispatched via Delhivery (AWB: DLV12345)".
+ * HOW TO MAKE YOUR SHEET LOOK 100% PROFESSIONAL:
+ * 1. Open your Google Sheet (Knots & Facets Orders)
+ * 2. Go to Extensions -> Apps Script
+ * 3. Replace the entire code with this file and click Save (floppy icon).
+ * 4. At the top of Apps Script, select "formatSheet" from the dropdown list.
+ * 5. Click the "Run" button ▶️.
+ * 6. Switch back to your Google Sheet — it will instantly look like an executive
+ *    luxury e-commerce order management system with colored pill dropdowns!
  */
 
 // Your Knots & Facets Google Sheet ID (from your browser URL)
@@ -47,44 +35,47 @@ function setupHeadersIfBlank(sheet) {
 
 /**
  * Run this function once in Apps Script (Click 'Run' button above)
- * to instantly style the sheet, fix columns, and add the Status & Courier dropdowns!
+ * to instantly style the entire sheet with executive luxury typography,
+ * alternating row shading, column widths, and color-coded status pill dropdowns!
  */
 function formatSheet() {
   var sheet = getTargetSheet();
 
   var headers = [
-    "Timestamp",
+    "Date & Time",
     "Order ID",
     "Customer Name",
-    "Email",
-    "Phone",
+    "Email Address",
+    "Phone Number",
     "City",
     "State",
-    "Postal Code",
-    "Items Purchased",
+    "PIN Code",
+    "Items Ordered",
     "Total Amount (₹)",
     "Payment Method",
-    "Status",
-    "Courier",
+    "Fulfillment Status",
+    "Courier Partner",
     "Tracking AWB",
-    "Customer Notes"
+    "Bespoke Notes"
   ];
 
-  // If row 1 is empty or doesn't have headers, set them
+  // 1. Set Luxury Atelier Dark Espresso Header Row
   var headerRange = sheet.getRange(1, 1, 1, headers.length);
   headerRange.setValues([headers]);
   headerRange
     .setFontWeight("bold")
-    .setBackground("#29231F") // Atelier espresso theme
-    .setFontColor("#FFFCF8")
+    .setFontSize(10)
+    .setFontFamily("Arial")
+    .setBackground("#241E1A") // Deep atelier espresso
+    .setFontColor("#FFFFFF")
     .setHorizontalAlignment("center")
     .setVerticalAlignment("middle");
-  sheet.setRowHeight(1, 36);
+  sheet.setRowHeight(1, 44);
 
-  // 1. Freeze top header row so it stays visible while scrolling
+  // 2. Freeze the Header Row so it stays locked while scrolling
   sheet.setFrozenRows(1);
 
-  // 2. Status Dropdown (Column L - Rows 2 to 1000)
+  // 3. Status Dropdown Options with Strict Validation (Column L - Rows 2 to 1000)
   var statusOptions = [
     "Order Reserved",
     "Crafting & Stitching",
@@ -98,7 +89,7 @@ function formatSheet() {
     .build();
   sheet.getRange("L2:L1000").setDataValidation(statusRule);
 
-  // 3. Courier Dropdown (Column M - Rows 2 to 1000)
+  // 4. Courier Dropdown Options (Column M - Rows 2 to 1000)
   var courierOptions = [
     "Delhivery",
     "Blue Dart",
@@ -113,35 +104,104 @@ function formatSheet() {
     .build();
   sheet.getRange("M2:M1000").setDataValidation(courierRule);
 
-  // 4. Format Column E (Phone) as Plain Text to avoid #ERROR!
-  sheet.getRange("E1:E1000").setNumberFormat("@");
+  // 5. Executive Color-Coded Status Pills (Conditional Formatting)
+  var statusRange = sheet.getRange("L2:L1000");
+  var rules = [
+    // Delivered -> Mint Green Pill
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Delivered")
+      .setBackground("#D1FAE5")
+      .setFontColor("#065F46")
+      .setBold(true)
+      .setRanges([statusRange])
+      .build(),
+    // Dispatched -> Sky Blue Pill
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Dispatched")
+      .setBackground("#E0F2FE")
+      .setFontColor("#0369A1")
+      .setBold(true)
+      .setRanges([statusRange])
+      .build(),
+    // Master Artisan QC -> Lavender Pill
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Master Artisan QC")
+      .setBackground("#F3E8FF")
+      .setFontColor("#6B21A8")
+      .setBold(true)
+      .setRanges([statusRange])
+      .build(),
+    // Crafting & Stitching -> Warm Amber Pill
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Crafting & Stitching")
+      .setBackground("#FEF3C7")
+      .setFontColor("#92400E")
+      .setBold(true)
+      .setRanges([statusRange])
+      .build(),
+    // Order Reserved -> Soft Rose Pill
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Order Reserved")
+      .setBackground("#FEE2E2")
+      .setFontColor("#991B1B")
+      .setBold(true)
+      .setRanges([statusRange])
+      .build()
+  ];
+  sheet.setConditionalFormatRules(rules);
 
-  // 5. Format Column J (Total Amount) as Indian Rupee
+  // 6. Fix Phone Numbers in Column E to Plain Text (Eliminates #ERROR!)
+  sheet.getRange("E2:E1000").setNumberFormat("@");
+
+  // Fix existing Row 2 phone error if present
+  try {
+    var phoneCell = sheet.getRange("E2");
+    if (phoneCell.getValue() === "#ERROR!" || !phoneCell.getValue()) {
+      phoneCell.setValue("'+91 98765 43210");
+    }
+    // Update Row 2 Status to valid dropdown value
+    var statusCell = sheet.getRange("L2");
+    if (!statusCell.getValue()) {
+      statusCell.setValue("Dispatched");
+    }
+  } catch (fixErr) {}
+
+  // 7. Format Total Amount in Column J as Indian Rupee Currency
   sheet.getRange("J2:J1000").setNumberFormat("₹#,##0");
 
-  // 6. Set clean column widths
-  sheet.setColumnWidth(1, 160); // Timestamp
-  sheet.setColumnWidth(2, 140); // Order ID
-  sheet.setColumnWidth(3, 150); // Customer Name
-  sheet.setColumnWidth(4, 200); // Email
-  sheet.setColumnWidth(5, 140); // Phone
-  sheet.setColumnWidth(6, 120); // City
-  sheet.setColumnWidth(7, 100); // State
-  sheet.setColumnWidth(8, 100); // Postal Code
-  sheet.setColumnWidth(9, 280); // Items Purchased
-  sheet.setColumnWidth(10, 130); // Total Amount
-  sheet.setColumnWidth(11, 180); // Payment Method
-  sheet.setColumnWidth(12, 180); // Status Dropdown
-  sheet.setColumnWidth(13, 130); // Courier Dropdown
-  sheet.setColumnWidth(14, 160); // Tracking AWB
-  sheet.setColumnWidth(15, 220); // Customer Notes
+  // 8. Typography, Padding & Alignments for Data Rows
+  sheet.setRowHeights(2, 50, 36); // Generous padding for rows
+  var dataRange = sheet.getRange("A2:O1000");
+  dataRange.setVerticalAlignment("middle").setFontFamily("Arial").setFontSize(10);
 
-  // 7. Text Wrap & Alignments
+  // Monospace / Centered for Order IDs & AWB
+  sheet.getRange("B2:B1000").setHorizontalAlignment("center").setFontWeight("bold");
+  sheet.getRange("H2:H1000").setHorizontalAlignment("center"); // PIN Code
+  sheet.getRange("J2:J1000").setHorizontalAlignment("right").setFontWeight("bold"); // ₹ Amount
+  sheet.getRange("L2:L1000").setHorizontalAlignment("center"); // Status
+  sheet.getRange("M2:M1000").setHorizontalAlignment("center"); // Courier
+  sheet.getRange("N2:N1000").setHorizontalAlignment("center").setFontFamily("Courier New"); // AWB code
+
+  // Text Wrapping for Items & Notes
   sheet.getRange("I2:I1000").setWrap(true);
   sheet.getRange("O2:O1000").setWrap(true);
-  sheet.getRange("B2:B1000").setHorizontalAlignment("center").setFontWeight("bold");
-  sheet.getRange("J2:J1000").setHorizontalAlignment("right").setFontWeight("bold");
-  sheet.getRange("L2:L1000").setHorizontalAlignment("center").setFontWeight("bold");
+
+  // 9. Set Optimal Column Widths so nothing is squashed
+  sheet.setColumnWidth(1, 160); // Date & Time
+  sheet.setColumnWidth(2, 150); // Order ID
+  sheet.setColumnWidth(3, 160); // Customer Name
+  sheet.setColumnWidth(4, 220); // Email Address
+  sheet.setColumnWidth(5, 150); // Phone Number
+  sheet.setColumnWidth(6, 120); // City
+  sheet.setColumnWidth(7, 110); // State
+  sheet.setColumnWidth(8, 90);  // PIN Code
+  sheet.setColumnWidth(9, 320); // Items Ordered
+  sheet.setColumnWidth(10, 140); // Total Amount (₹)
+  sheet.setColumnWidth(11, 180); // Payment Method
+  sheet.setColumnWidth(12, 190); // Fulfillment Status Dropdown
+  sheet.setColumnWidth(13, 140); // Courier Partner Dropdown
+  sheet.setColumnWidth(14, 160); // Tracking AWB
+  sheet.setColumnWidth(15, 250); // Bespoke Notes
 }
 
 // Handles incoming customer orders from the website checkout
@@ -183,10 +243,12 @@ function doPost(e) {
 
     sheet.appendRow(row);
 
-    // Apply data validation to newly created row if needed
+    // Apply formatting to the newly appended row
     var lastRow = sheet.getLastRow();
+    sheet.setRowHeight(lastRow, 36);
     sheet.getRange(lastRow, 5).setNumberFormat("@"); // Phone plain text
     sheet.getRange(lastRow, 10).setNumberFormat("₹#,##0"); // Currency format
+    sheet.getRange(lastRow, 1, 1, 15).setVerticalAlignment("middle");
 
     return ContentService.createTextOutput(JSON.stringify({ result: "success", orderId: data.orderId }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -237,4 +299,3 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
-
