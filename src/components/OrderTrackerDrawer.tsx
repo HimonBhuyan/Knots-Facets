@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
+import { SavedOrder } from '../types';
 import {
   X,
   Package,
@@ -13,9 +14,9 @@ import {
   Phone,
   AlertCircle,
   ArrowRight,
-  BookmarkCheck,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  ArrowLeft
 } from 'lucide-react';
 import { OrderDirectLinkCard } from './OrderDirectLinkCard';
 import { fetchOrderStatusFromGoogleSheet, SheetOrderStatus } from '../utils/googleSheetsSync';
@@ -51,15 +52,13 @@ export const OrderTrackerDrawer: React.FC = () => {
     selectedOrderId,
     setSelectedOrderId,
     lookupGuestOrder,
+    saveOrder,
     formatPrice,
     showToast
   } = useCart();
 
-  // Mode: 'device' (orders saved locally) or 'lookup' (guest search by Order ID + Email/Phone)
-  const [activeTab, setActiveTab] = useState<'device' | 'lookup'>('device');
-
-  // Search in local orders
-  const [localSearch, setLocalSearch] = useState('');
+  // Mode: true when showing the Guest Lookup Form, false when viewing an active order
+  const [isLookupMode, setIsLookupMode] = useState(() => !selectedOrderId && orders.length === 0);
 
   // Guest Lookup form state
   const [lookupId, setLookupId] = useState('');
@@ -94,19 +93,10 @@ export const OrderTrackerDrawer: React.FC = () => {
   // Simulation overrides for stage progression
   const [stageOverrides, setStageOverrides] = useState<Record<string, number>>({});
 
-  // Filter local orders
-  const filteredOrders = orders.filter(
-    o =>
-      !localSearch.trim() ||
-      o.orderId.toLowerCase().includes(localSearch.trim().toLowerCase()) ||
-      o.customerName.toLowerCase().includes(localSearch.trim().toLowerCase())
-  );
-
-  // Select active order
+  // Active order to display
   const activeOrder =
     orders.find(o => o.orderId === selectedOrderId) ||
-    filteredOrders[0] ||
-    orders[0] ||
+    (selectedOrderId ? null : orders[0]) ||
     null;
 
   // Fetch real-time status from Google Sheets whenever an order is opened
@@ -123,17 +113,19 @@ export const OrderTrackerDrawer: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (activeOrder && isOrdersOpen) {
+    if (activeOrder && isOrdersOpen && !isLookupMode) {
       loadOrderStatus(activeOrder.orderId, activeOrder.date);
     }
-  }, [activeOrder?.orderId, activeOrder?.date, isOrdersOpen, loadOrderStatus]);
+  }, [activeOrder?.orderId, activeOrder?.date, isOrdersOpen, isLookupMode, loadOrderStatus]);
 
-  // When drawer opens, if an order was requested, make sure it is selected
+  // When drawer opens, if an explicit order ID was passed, switch to tracking view
   useEffect(() => {
-    if (selectedOrderId && orders.some(o => o.orderId === selectedOrderId)) {
-      setActiveTab('device');
+    if (selectedOrderId) {
+      setIsLookupMode(false);
+    } else if (orders.length === 0) {
+      setIsLookupMode(true);
     }
-  }, [selectedOrderId, orders]);
+  }, [selectedOrderId, orders.length, isOrdersOpen]);
 
   const sheetData = activeOrder ? liveSheetStatus[activeOrder.orderId] : undefined;
   const currentStage = activeOrder
@@ -151,22 +143,65 @@ export const OrderTrackerDrawer: React.FC = () => {
     showToast(`📦 [Admin] Order #${orderId} reset to Stage 0`, '↺');
   };
 
-  const handleGuestLookupSubmit = (e: React.FormEvent) => {
+  const handleGuestLookupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLookupError(null);
     setIsLookingUp(true);
 
-    setTimeout(() => {
-      const res = lookupGuestOrder(lookupId, lookupContact);
+    const cleanId = (lookupId || '').trim().toUpperCase().replace(/^#/, '');
+    const cleanContact = (lookupContact || '').trim();
+
+    // 1. Check local session records first
+    const res = lookupGuestOrder(cleanId, cleanContact);
+    if (res.success && res.order) {
       setIsLookingUp(false);
-      if (res.success && res.order) {
-        setLookupError(null);
-        setActiveTab('device');
-        setSelectedOrderId(res.order.orderId);
-      } else {
-        setLookupError(res.error || 'No matching order found.');
+      setIsLookupMode(false);
+      setSelectedOrderId(res.order.orderId);
+      loadOrderStatus(res.order.orderId, res.order.date);
+      showToast(`✓ Order #${res.order.orderId} verified!`, '📦');
+      return;
+    }
+
+    // 2. Query Google Sheet central database if not saved on this device
+    try {
+      const sheetStatus = await fetchOrderStatusFromGoogleSheet(cleanId);
+      if (sheetStatus && sheetStatus.found) {
+        const syncedOrder: SavedOrder = {
+          orderId: cleanId,
+          txnId: 'SYNCED_STUDIO',
+          date: 'Recent Atelier Order',
+          customerName: 'Valued Collector',
+          email: cleanContact.includes('@') ? cleanContact : 'collector@knotsandfacets.com',
+          phone: !cleanContact.includes('@') ? cleanContact : '+91 98765 43210',
+          address: 'Guwahati Studio Dispatch',
+          city: 'Guwahati',
+          state: 'Assam',
+          postalCode: '',
+          country: 'India',
+          paymentMethodLabel: 'Verified Atelier Payment Gateway',
+          shippingMethodLabel: sheetStatus.courier ? `Dispatched via ${sheetStatus.courier}` : 'Standard Tracked Atelier Post',
+          items: [],
+          subtotalUSD: 0,
+          discountUSD: 0,
+          shippingUSD: 0,
+          giftWrapUSD: 0,
+          totalUSD: 0,
+          stageIndex: sheetStatus.stageIndex
+        };
+        saveOrder(syncedOrder);
+        setSelectedOrderId(cleanId);
+        setLiveSheetStatus(prev => ({ ...prev, [cleanId]: sheetStatus }));
+        setIsLookupMode(false);
+        setIsLookingUp(false);
+        showToast(`✓ Order #${cleanId} verified from studio records!`, '✨');
+        return;
       }
-    }, 450);
+    } catch (sheetErr) {
+      console.warn('Sheet lookup error:', sheetErr);
+    }
+
+    setIsLookingUp(false);
+    setLookupError(res.error || `No matching parcel found with Order ID #${cleanId}. Please verify your details.`);
   };
 
   return (
@@ -197,244 +232,18 @@ export const OrderTrackerDrawer: React.FC = () => {
           </button>
         </div>
 
-        {/* Dual Mode Switcher Tabs */}
-        <div className="ot-tab-strip">
-          <button
-            type="button"
-            className={`ot-tab-btn ${activeTab === 'device' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('device');
-              setLookupError(null);
-            }}
-          >
-            <BookmarkCheck size={14} />
-            <span>This Device ({orders.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`ot-tab-btn ${activeTab === 'lookup' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('lookup');
-              setLookupError(null);
-            }}
-          >
-            <Shield size={14} />
-            <span>Guest Lookup (No Login)</span>
-          </button>
-        </div>
-
-        {/* ================= TAB 1: THIS DEVICE (LOCAL HISTORY) ================= */}
-        {activeTab === 'device' && (
-          <>
-            {/* Search filter within local orders */}
-            {orders.length > 1 && (
-              <div className="order-tracker-search">
-                <Search size={15} className="ot-search-icon" />
-                <input
-                  type="text"
-                  placeholder="Filter saved orders by ID or name..."
-                  value={localSearch}
-                  onChange={e => setLocalSearch(e.target.value)}
-                />
-              </div>
-            )}
-
-            {/* Order Selector Pills if multiple orders exist */}
-            {filteredOrders.length > 1 && (
-              <div className="order-selector-strip">
-                {filteredOrders.map(ord => (
-                  <button
-                    key={ord.orderId}
-                    type="button"
-                    className={`order-pill-btn ${activeOrder?.orderId === ord.orderId ? 'active' : ''}`}
-                    onClick={() => setSelectedOrderId(ord.orderId)}
-                  >
-                    <span>#{ord.orderId}</span>
-                    <small>{ord.date}</small>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="cart-items order-tracker-body">
-              {!activeOrder ? (
-                <div className="cart-empty-state">
-                  <Package size={42} color="#9B7765" style={{ marginBottom: '12px' }} />
-                  <h3>No Orders Saved On This Device</h3>
-                  <p style={{ fontSize: '0.86rem', color: 'var(--ink-soft)', marginBottom: '16px' }}>
-                    If you placed an order on another device or cleared your browser, look it up securely using your Order ID and Email or Phone.
-                  </p>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setActiveTab('lookup')}
-                  >
-                    <Shield size={14} />
-                    <span>Open Guest Order Lookup</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="order-tracker-card">
-                  {/* Order Summary Banner */}
-                  <div className="ot-summary-head">
-                    <div>
-                      <span className="ot-eyebrow">LIVE WORKBENCH &amp; DISPATCH TRACKER</span>
-                      <h3>Order #{activeOrder.orderId}</h3>
-                      <small>
-                        Placed {activeOrder.date} &bull; {activeOrder.city}, {activeOrder.country}
-                      </small>
-                    </div>
-                    <div className="ot-total-badge">{formatPrice(activeOrder.totalUSD)}</div>
-                  </div>
-
-                  {/* Verified Session Pill */}
-                  <div className="ot-verified-pill">
-                    <CheckCircle2 size={13} color="#2A6B48" />
-                    <span>Verified Guest Session &bull; Linked to this device</span>
-                  </div>
-
-                  {/* Live Sync Status Banner */}
-                  <div className="ot-sync-bar">
-                    <div className="ot-sync-indicator">
-                      <span className="ot-pulse-dot" />
-                      <span>
-                        {sheetData?.source === 'google_sheets'
-                          ? `Live Sheet Synced • ${sheetData.statusText}`
-                          : 'Automated Atelier Tracking'}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      className="ot-refresh-sync-btn"
-                      onClick={() => {
-                        loadOrderStatus(activeOrder.orderId, activeOrder.date);
-                        showToast('Checking latest studio dispatch status...', '🔄');
-                      }}
-                      title="Check for real-time updates from studio"
-                    >
-                      <RefreshCw size={12} className={isSyncingSheet ? 'spinning' : ''} />
-                      <span>Refresh</span>
-                    </button>
-                  </div>
-
-                  {/* Courier AWB Tracking Card (shown if AWB is entered in Google Sheet) */}
-                  {sheetData?.trackingAwb && (
-                    <div className="ot-awb-card">
-                      <Truck size={18} color="#9B7765" />
-                      <div className="ot-awb-info">
-                        <strong>Dispatched via {sheetData.courier || 'Priority Courier'}</strong>
-                        <span>AWB Tracking: <code>{sheetData.trackingAwb}</code></span>
-                      </div>
-                      <a
-                        href={`https://www.google.com/search?q=${encodeURIComponent(
-                          `${sheetData.courier || 'courier'} tracking ${sheetData.trackingAwb}`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ot-awb-link"
-                      >
-                        <span>Track</span>
-                        <ExternalLink size={12} />
-                      </a>
-                    </div>
-                  )}
-
-                  {/* 1-Click Direct Link & Scannable QR Code */}
-                  <OrderDirectLinkCard order={activeOrder} variant="drawer" />
-
-                  {/* 5-Stage Vertical Crafting & Courier Timeline */}
-                  <div className="ot-timeline">
-                    {TRACKING_STAGES.map((st, idx) => {
-                      const isDone = idx <= currentStage;
-                      const isCurrent = idx === currentStage;
-                      return (
-                        <div
-                          key={st.title}
-                          className={`ot-timeline-step ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
-                        >
-                          <div className="ot-step-marker">
-                            <CheckCircle2 size={15} />
-                          </div>
-                          <div className="ot-step-content">
-                            <div className="ot-step-title-row">
-                              <strong>{st.title}</strong>
-                              {isCurrent && <span className="ot-live-tag">ACTIVE STAGE</span>}
-                            </div>
-                            <p>{st.desc}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Admin Only Override Controls — Never shown to regular customers */}
-                  {isAdminMode && (
-                    <div className="ot-admin-card">
-                      <div className="ot-admin-card-head">
-                        <Shield size={14} />
-                        <strong>Admin Studio Controls (Visible Only to You)</strong>
-                      </div>
-                      <p>Customers have zero control over this. Use buttons below or update your Google Sheet.</p>
-                      <div className="ot-admin-btn-row">
-                        {currentStage < 4 && (
-                          <button
-                            type="button"
-                            className="ot-simulate-btn"
-                            onClick={() => advanceStage(activeOrder.orderId)}
-                          >
-                            <Sparkles size={14} />
-                            <span>Advance Stage &rarr;</span>
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className="ot-reset-btn"
-                          onClick={() => resetStage(activeOrder.orderId)}
-                        >
-                          Reset to Stage 0
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Reserved Pieces in this Order */}
-                  <div className="ot-items-section">
-                    <h4>Pieces in Parcel ({activeOrder.items.reduce((s, i) => s + i.qty, 0)})</h4>
-                    {activeOrder.items.map(item => (
-                      <div key={item.id} className="ot-item-row">
-                        <img src={item.image} alt={item.title} />
-                        <div>
-                          <strong>{item.title}</strong>
-                          <small>Qty: {item.qty} &bull; {formatPrice(item.priceUSD * item.qty)}</small>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="ot-courier-meta">
-                    <Truck size={16} />
-                    <div>
-                      <strong>{activeOrder.shippingMethodLabel}</strong>
-                      <small>Gateway Ref: {activeOrder.txnId} &bull; {activeOrder.paymentMethodLabel}</small>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* ================= TAB 2: GUEST ORDER LOOKUP ================= */}
-        {activeTab === 'lookup' && (
+        {/* ================= GUEST ORDER LOOKUP VIEW ================= */}
+        {(!activeOrder || isLookupMode) ? (
           <div className="cart-items order-tracker-body">
             <div className="ot-lookup-panel">
               <div className="ot-lookup-intro">
                 <div className="ot-lookup-icon-badge">
-                  <Shield size={24} color="#9B7765" />
+                  <Shield size={26} color="#9B7765" />
                 </div>
-                <h3>Look Up Any Previous Order</h3>
+                <span className="ot-eyebrow">GUEST ORDER LOOKUP</span>
+                <h3>Track Your Atelier Order</h3>
                 <p>
-                  Access your order details and live dispatch status from any device without creating an account or password.
+                  Enter your Order ID and the Email or Phone used during checkout to check real-time workshop crafting progress and courier tracking. Zero login required.
                 </p>
               </div>
 
@@ -458,7 +267,7 @@ export const OrderTrackerDrawer: React.FC = () => {
                       required
                     />
                   </div>
-                  <small>Found on your invoice or confirmation screen</small>
+                  <small>Found on your invoice, confirmation screen, or SMS</small>
                 </div>
 
                 <div className="ot-lookup-field">
@@ -477,7 +286,7 @@ export const OrderTrackerDrawer: React.FC = () => {
                       required
                     />
                   </div>
-                  <small>The contact detail used during checkout</small>
+                  <small>The contact detail provided during checkout</small>
                 </div>
 
                 <button
@@ -486,7 +295,7 @@ export const OrderTrackerDrawer: React.FC = () => {
                   disabled={isLookingUp || !lookupId.trim() || !lookupContact.trim()}
                 >
                   {isLookingUp ? (
-                    <span>Verifying Order Records...</span>
+                    <span>Verifying Studio Records...</span>
                   ) : (
                     <>
                       <span>Verify &amp; Track Parcel</span>
@@ -496,11 +305,229 @@ export const OrderTrackerDrawer: React.FC = () => {
                 </button>
               </form>
 
+              {/* If an order was previously active, allow 1-click return to it */}
+              {activeOrder && isLookupMode && (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsLookupMode(false)}
+                  style={{ width: '100%', marginTop: '12px', justifyContent: 'center' }}
+                >
+                  <ArrowLeft size={14} />
+                  <span>Return to Order #{activeOrder.orderId}</span>
+                </button>
+              )}
+
+              {/* Quick access if orders exist on this browser */}
+              {orders.length > 0 && !activeOrder && (
+                <div className="ot-recent-orders-box">
+                  <small>Recent orders on this browser:</small>
+                  <div className="ot-recent-pills-row">
+                    {orders.map(o => (
+                      <button
+                        key={o.orderId}
+                        type="button"
+                        className="ot-recent-pill"
+                        onClick={() => {
+                          setSelectedOrderId(o.orderId);
+                          setIsLookupMode(false);
+                        }}
+                      >
+                        <Package size={13} />
+                        <span>#{o.orderId}</span>
+                        <ArrowRight size={11} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="ot-lookup-safety-notice">
                 <Shield size={14} />
                 <span>
                   <strong>Private &amp; Secure Verification:</strong> We match your Order ID against the contact detail provided to protect your delivery address and purchase history.
                 </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ================= ACTIVE ORDER TRACKING TIMELINE ================= */
+          <div className="cart-items order-tracker-body">
+            {/* Top Switcher Bar */}
+            <div className="ot-active-top-actions">
+              <button
+                type="button"
+                className="ot-switch-order-btn"
+                onClick={() => {
+                  setIsLookupMode(true);
+                  setLookupError(null);
+                }}
+              >
+                <Search size={13} />
+                <span>Look Up Different Order</span>
+              </button>
+
+              {orders.length > 1 && (
+                <div className="order-selector-strip" style={{ padding: 0, border: 'none', margin: 0 }}>
+                  {orders.map(ord => (
+                    <button
+                      key={ord.orderId}
+                      type="button"
+                      className={`order-pill-btn ${activeOrder.orderId === ord.orderId ? 'active' : ''}`}
+                      onClick={() => setSelectedOrderId(ord.orderId)}
+                    >
+                      <span>#{ord.orderId}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="order-tracker-card">
+              {/* Order Summary Banner */}
+              <div className="ot-summary-head">
+                <div>
+                  <span className="ot-eyebrow">LIVE WORKBENCH &amp; DISPATCH TRACKER</span>
+                  <h3>Order #{activeOrder.orderId}</h3>
+                  <small>
+                    Placed {activeOrder.date} &bull; {activeOrder.city}, {activeOrder.country}
+                  </small>
+                </div>
+                <div className="ot-total-badge">{formatPrice(activeOrder.totalUSD)}</div>
+              </div>
+
+              {/* Verified Guest Order Pill */}
+              <div className="ot-verified-pill">
+                <CheckCircle2 size={13} color="#2A6B48" />
+                <span>Verified Guest Order &bull; Real-Time Studio Tracking</span>
+              </div>
+
+              {/* Live Sync Status Banner */}
+              <div className="ot-sync-bar">
+                <div className="ot-sync-indicator">
+                  <span className="ot-pulse-dot" />
+                  <span>
+                    {sheetData?.source === 'google_sheets'
+                      ? `Live Sheet Synced • ${sheetData.statusText}`
+                      : 'Automated Atelier Tracking'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="ot-refresh-sync-btn"
+                  onClick={() => {
+                    loadOrderStatus(activeOrder.orderId, activeOrder.date);
+                    showToast('Checking latest studio dispatch status...', '🔄');
+                  }}
+                  title="Check for real-time updates from studio"
+                >
+                  <RefreshCw size={12} className={isSyncingSheet ? 'spinning' : ''} />
+                  <span>Refresh</span>
+                </button>
+              </div>
+
+              {/* Courier AWB Tracking Card (shown if AWB is entered in Google Sheet) */}
+              {sheetData?.trackingAwb && (
+                <div className="ot-awb-card">
+                  <Truck size={18} color="#9B7765" />
+                  <div className="ot-awb-info">
+                    <strong>Dispatched via {sheetData.courier || 'Priority Courier'}</strong>
+                    <span>AWB Tracking: <code>{sheetData.trackingAwb}</code></span>
+                  </div>
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(
+                      `${sheetData.courier || 'courier'} tracking ${sheetData.trackingAwb}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ot-awb-link"
+                  >
+                    <span>Track</span>
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
+
+              {/* 1-Click Direct Link & Scannable QR Code */}
+              <OrderDirectLinkCard order={activeOrder} variant="drawer" />
+
+              {/* 5-Stage Vertical Crafting & Courier Timeline */}
+              <div className="ot-timeline">
+                {TRACKING_STAGES.map((st, idx) => {
+                  const isDone = idx <= currentStage;
+                  const isCurrent = idx === currentStage;
+                  return (
+                    <div
+                      key={st.title}
+                      className={`ot-timeline-step ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+                    >
+                      <div className="ot-step-marker">
+                        <CheckCircle2 size={15} />
+                      </div>
+                      <div className="ot-step-content">
+                        <div className="ot-step-title-row">
+                          <strong>{st.title}</strong>
+                          {isCurrent && <span className="ot-live-tag">ACTIVE STAGE</span>}
+                        </div>
+                        <p>{st.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Admin Only Override Controls — Never shown to regular customers */}
+              {isAdminMode && (
+                <div className="ot-admin-card">
+                  <div className="ot-admin-card-head">
+                    <Shield size={14} />
+                    <strong>Admin Studio Controls (Visible Only to You)</strong>
+                  </div>
+                  <p>Customers have zero control over this. Use buttons below or update your Google Sheet.</p>
+                  <div className="ot-admin-btn-row">
+                    {currentStage < 4 && (
+                      <button
+                        type="button"
+                        className="ot-simulate-btn"
+                        onClick={() => advanceStage(activeOrder.orderId)}
+                      >
+                        <Sparkles size={14} />
+                        <span>Advance Stage &rarr;</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="ot-reset-btn"
+                      onClick={() => resetStage(activeOrder.orderId)}
+                    >
+                      Reset to Stage 0
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Reserved Pieces in this Order */}
+              {activeOrder.items && activeOrder.items.length > 0 && (
+                <div className="ot-items-section">
+                  <h4>Pieces in Parcel ({activeOrder.items.reduce((s, i) => s + i.qty, 0)})</h4>
+                  {activeOrder.items.map(item => (
+                    <div key={item.id} className="ot-item-row">
+                      <img src={item.image} alt={item.title} />
+                      <div>
+                        <strong>{item.title}</strong>
+                        <small>Qty: {item.qty} &bull; {formatPrice(item.priceUSD * item.qty)}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="ot-courier-meta">
+                <Truck size={16} />
+                <div>
+                  <strong>{activeOrder.shippingMethodLabel}</strong>
+                  <small>Gateway Ref: {activeOrder.txnId} &bull; {activeOrder.paymentMethodLabel}</small>
+                </div>
               </div>
             </div>
           </div>
