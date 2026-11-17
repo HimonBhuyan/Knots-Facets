@@ -190,7 +190,7 @@ export const decodeOrderToken = (token: string): SavedOrder | null => {
  */
 export const buildOrderDirectUrl = (
   order: SavedOrder,
-  baseUrl = typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'https://knots-facets.vercel.app/'
+  baseUrl = typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'https://knotsandfacets.in/'
 ): { fullUrl: string; shortUrl: string; key: string } => {
   const cleanBase = baseUrl.replace(/\/$/, '');
   const key = generateOrderKey(order.orderId, order.email);

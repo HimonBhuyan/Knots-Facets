@@ -9,7 +9,7 @@
 
 ### *Handmade Crafts & Accessories — Where Prismatic Light Meets Slow Fibre*
 
-[![Live Demo](https://img.shields.io/badge/LIVE_ATELIER-knots--facets.vercel.app-29231F?style=for-the-badge&logo=vercel&logoColor=FFFCF8)](https://knots-facets.vercel.app)
+[![Live Demo](https://img.shields.io/badge/LIVE_ATELIER-knotsandfacets.in-29231F?style=for-the-badge&logo=vercel&logoColor=FFFCF8)](https://knotsandfacets.in)
 [![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=29231F)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -18,7 +18,7 @@
   <strong>Knots &amp; Facets</strong> is a luxury digital flagship and e-commerce atelier for small-batch handcrafted <strong>Bohemian &amp; Czech faceted glass crystal jewellery</strong> and <strong>100% unbleached organic cotton crochet accessories</strong>, crafted slowly in Guwahati, Assam.
 </p>
 
-[Explore Live Atelier ↗](https://knots-facets.vercel.app) · [Shop Catalog](https://knots-facets.vercel.app/#shop) · [Lookbook](https://knots-facets.vercel.app/#lookbook) · [Bespoke Configurator](https://knots-facets.vercel.app/#custom)
+[Explore Live Atelier ↗](https://knotsandfacets.in) · [Shop Catalog](https://knotsandfacets.in/#shop) · [Lookbook](https://knotsandfacets.in/#lookbook) · [Bespoke Configurator](https://knotsandfacets.in/#custom)
 
 </div>
 
