@@ -35,7 +35,7 @@ export const StoryPage: React.FC<StoryPageProps> = ({ setActivePage }) => {
         </div>
 
         {/* Split Story 1 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(30px, 6vw, 80px)', alignItems: 'center', marginBottom: 'clamp(60px, 9vw, 100px)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 'clamp(24px, 6vw, 80px)', alignItems: 'center', marginBottom: 'clamp(50px, 9vw, 100px)' }}>
           <div>
             <span className="eyebrow">Two Disciplines, One Heart</span>
             <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(2.2rem, 3.8vw, 3.2rem)', lineHeight: 1.15, margin: '0 0 20px' }}>
@@ -54,7 +54,7 @@ export const StoryPage: React.FC<StoryPageProps> = ({ setActivePage }) => {
         </div>
 
         {/* Split Story 2 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(30px, 6vw, 80px)', alignItems: 'center', marginBottom: 'clamp(60px, 9vw, 100px)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 'clamp(24px, 6vw, 80px)', alignItems: 'center', marginBottom: 'clamp(50px, 9vw, 100px)' }}>
           <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-md)' }}>
             <img src="/images/crochet_bag.jpg" alt="Handcrafted natural cotton crochet tote bag" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>

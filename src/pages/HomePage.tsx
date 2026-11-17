@@ -447,7 +447,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setActivePage }) => {
           </p>
         </div>
 
-        <div className="collections" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '80px' }}>
+        <div className="collections" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px', marginBottom: '80px' }}>
           <div
             className="coll"
             onClick={() => setActivePage('shop')}
@@ -488,7 +488,7 @@ export const HomePage: React.FC<HomePageProps> = ({ setActivePage }) => {
         </div>
 
         {/* Sustainable Packaging Feature */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 'var(--radius-sm)', padding: 'clamp(32px, 5vw, 60px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center', marginBottom: '80px', width: '100%' }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 'var(--radius-sm)', padding: 'clamp(24px, 5vw, 60px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '32px', alignItems: 'center', marginBottom: '80px', width: '100%', boxSizing: 'border-box' }}>
           <div>
             <span className="eyebrow">Sustainable Gifting</span>
             <h2 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(2.2rem, 3.5vw, 3rem)', lineHeight: 1.2, margin: '0 0 16px' }}>

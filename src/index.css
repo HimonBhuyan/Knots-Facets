@@ -39,6 +39,9 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 24px;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 body {
@@ -52,7 +55,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  max-width: 100vw;
   min-height: 100vh;
+  width: 100%;
+}
+
+#root,
+.site-frame {
+  overflow-x: hidden;
+  max-width: 100vw;
   width: 100%;
 }
 
@@ -6491,4 +6502,456 @@ h1 .l2 {
   font-style: italic;
   opacity: 0.85;
 }
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS & ANTI-OVERFLOW SUITE
+   Solves all screen clipping, modal overflow, and narrow viewport defects
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Global Viewport & Container Safety */
+  html, body, #root, .site-frame {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+
+  /* 1. Announcement Bar — Prevent 540px text blow-out */
+  .announcement-bar {
+    padding: 7px 12px !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.04em !important;
+    overflow: hidden !important;
+    max-width: 100vw !important;
+    white-space: nowrap !important;
+    justify-content: center !important;
+  }
+  .announcement-bar span:nth-child(2) {
+    display: none !important; /* Hide secondary slogan on mobile */
+  }
+  .announcement-bar span:first-child {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+  }
+
+  /* 2. Top Navigation Bar */
+  .site-nav {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+  .brand-text {
+    font-size: 1.15rem !important;
+  }
+  .brand-logo-img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .soundscape-label {
+    display: none !important;
+  }
+  .soundscape-toggle {
+    padding: 7px 9px !important;
+  }
+  .nav-actions {
+    gap: 6px !important;
+  }
+  .currency-select {
+    padding: 4px 6px !important;
+    font-size: 0.7rem !important;
+  }
+  .nav-icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  /* 3. QuickView Modal — Full Responsiveness, Bottom-Sheet, and Horizontal Scroll Tabs */
+  .modal-overlay {
+    padding: 10px 8px !important;
+    align-items: flex-end !important;
+  }
+  .modal-content.quickview-modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .quickview-grid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .quickview-gallery {
+    padding: 12px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .quickview-main-img-wrap {
+    height: 250px !important;
+    width: 100% !important;
+  }
+  .quickview-details {
+    padding: 16px 14px 28px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .quickview-badge-row {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .quickview-title {
+    font-size: 1.35rem !important;
+    line-height: 1.22 !important;
+    word-break: break-word !important;
+    margin-bottom: 8px !important;
+  }
+  .quickview-desc {
+    font-size: 0.86rem !important;
+    line-height: 1.55 !important;
+    word-break: break-word !important;
+    margin-bottom: 14px !important;
+  }
+  /* Horizontal Scrollable Tabs Strip */
+  .qv-tabs-nav {
+    display: flex !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 12px !important;
+  }
+  .qv-tabs-nav::-webkit-scrollbar {
+    display: none !important;
+  }
+  .qv-tab-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 6px 11px !important;
+    font-size: 0.72rem !important;
+  }
+  .quickview-specs-card {
+    padding: 12px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .quickview-cta-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 14px !important;
+  }
+  .quickview-add-btn {
+    width: 100% !important;
+    padding: 14px !important;
+    font-size: 0.88rem !important;
+  }
+  .quickview-buy-now-btn {
+    width: 100% !important;
+    padding: 12px !important;
+  }
+  .quickview-wishlist-btn {
+    width: 100% !important;
+    height: 42px !important;
+    border-radius: var(--radius-pill) !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* 4. Checkout Page & Form Overrides */
+  .checkout-page-wrap {
+    padding: 14px 10px 80px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  .checkout-top-bar {
+    margin-bottom: 14px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-steps-indicator {
+    display: none !important;
+  }
+  .checkout-ssl-badge {
+    font-size: 0.7rem !important;
+  }
+  .checkout-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .checkout-left-col {
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  .checkout-demo-bar {
+    padding: 12px 14px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-demo-btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+  }
+  .checkout-card-section {
+    padding: 16px 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+  }
+  .checkout-sec-header {
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 12px !important;
+  }
+  .checkout-sec-num {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.74rem !important;
+    flex-shrink: 0 !important;
+  }
+  .checkout-sec-header h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+    word-break: break-word !important;
+  }
+  .checkout-sec-header p {
+    font-size: 0.78rem !important;
+    line-height: 1.4 !important;
+  }
+  .checkout-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  .chk-field {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .chk-field input,
+  .chk-field select,
+  .chk-field textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    padding: 11px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-radio-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .checkout-option-card {
+    padding: 14px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-gift-toggle {
+    padding: 12px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .chk-gift-left {
+    gap: 10px !important;
+    flex: 1 1 80% !important;
+  }
+  .payment-method-tabs {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .pay-tab-btn {
+    padding: 10px 8px !important;
+    font-size: 0.76rem !important;
+  }
+  .live-credit-card {
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 16px !important;
+  }
+  .lcc-top {
+    margin-bottom: 16px !important;
+  }
+  .lcc-number {
+    font-size: 1.05rem !important;
+    letter-spacing: 0.08em !important;
+    margin-bottom: 14px !important;
+  }
+  .lcc-bottom {
+    font-size: 0.72rem !important;
+  }
+  .upi-apps-row {
+    gap: 6px !important;
+    overflow-x: auto !important;
+    padding-bottom: 6px !important;
+  }
+  .upi-gateway-split {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .upi-input-group {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .upi-input-group input {
+    font-size: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .upi-input-group button {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+  .upi-qr-card {
+    width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-right-col {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-order-summary {
+    padding: 18px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 5. Delivery Date Checker & Direct Link Cards */
+  .delivery-checker-wrap {
+    padding: 12px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .dc-form-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .dc-input-frame {
+    width: 100% !important;
+  }
+  .dc-input-frame input {
+    font-size: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .dc-check-btn {
+    width: 100% !important;
+    padding: 10px !important;
+  }
+  .dc-samples-row {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .odc-card {
+    padding: 14px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .odc-qr-pane {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 12px !important;
+  }
+  .odc-action-bar {
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .odc-action-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 11px !important;
+  }
+
+  /* 6. Invoice / Order Confirmation Screen */
+  .invoice-screen-toolbar {
+    padding: 14px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+  }
+  .invoice-toolbar-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .invoice-toolbar-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .atelier-invoice-sheet {
+    padding: 18px 14px !important;
+    border-radius: 8px !important;
+    outline: none !important;
+  }
+  .inv-header {
+    flex-direction: column !important;
+    gap: 14px !important;
+    padding-bottom: 18px !important;
+    margin-bottom: 18px !important;
+  }
+  .inv-parties-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .inv-bottom-split {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .inv-signature-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+  .inv-wax-stamp {
+    display: none !important;
+  }
+
+  /* 7. Catalog & Product Grids on Mobile */
+  .product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .bundle-picker-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .newsletter-form {
+    flex-direction: column !important;
+  }
+  .newsletter-form button {
+    width: 100% !important;
+  }
+}
+
 
